@@ -1,0 +1,11 @@
+{
+  "name": "marcell-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Portfólio de dados de Marcell Felipe com assistente de IA (Gemini).",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "imagens": "node scripts/baixar-imagens.mjs"
+  }
+}

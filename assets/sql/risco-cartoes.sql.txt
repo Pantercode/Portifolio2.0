@@ -1,0 +1,250 @@
+WITH CARTAO AS (
+  SELECT
+    TRIM(SAFE_CAST(id AS STRING)) AS id,
+    TRIM(SAFE_CAST(client_id AS STRING)) AS client_id,
+    UPPER(card_brand) AS bandeira_cartao,
+    UPPER(card_type) AS tipo_cartao,
+    card_number AS num_cartao,
+    expires AS data_expiracao_cartao,
+    cvv,
+    CASE
+      WHEN has_chip = TRUE THEN 'SIM'
+      WHEN has_chip = FALSE THEN 'NÃO'
+      ELSE CAST(has_chip AS STRING)
+    END AS tem_chip,
+    num_cards_issued AS numero_de_cartoes_emitidos,
+    credit_limit AS limite_cartao,
+    acct_open_date AS data_de_abertura_da_conta,
+    year_pin_last_changed AS ano_pin_ultima_alteracao,
+    CASE
+      WHEN card_on_dark_web = TRUE THEN 'SIM'
+      WHEN card_on_dark_web = FALSE THEN 'NÃO'
+      ELSE CAST(card_on_dark_web AS STRING)
+    END AS cartao_na_dark_web
+  FROM `bubbly-dominion-465109-v8.estudos.cards`
+  WHERE 1 = 1
+)
+
+, USUARIOS AS (
+  SELECT
+    TRIM(SAFE_CAST(U.id AS STRING)) AS id,
+    U.current_age AS idade_atual,
+    U.retirement_age AS idade_de_aposentadoria,
+    CONCAT(U.birth_month, '-', U.birth_year) aniversario,
+    UPPER(U.gender) AS genero,
+    UPPER(U.address) AS endereco,
+    U.latitude,
+    U.longitude,
+    U.per_capita_income AS renda_per_capita,
+    U.yearly_income AS renda_anual,
+    U.total_debt AS divida_total,
+    U.credit_score,
+    U.num_credit_cards AS numero_cartoes_de_credito,
+    ST_GEOGPOINT(U.longitude, U.latitude) AS localizacao_geografica
+  FROM `bubbly-dominion-465109-v8.estudos.users_card` AS U
+  WHERE 1 = 1
+)
+
+, TRANSACOES AS (
+  SELECT
+    id,
+    DATE(date) AS data_transacao,
+    TRIM(SAFE_CAST(client_id AS STRING)) AS client_id,
+    TRIM(SAFE_CAST(card_id AS STRING)) AS card_id,
+    amount AS quantia,
+    UPPER(use_chip) AS usa_chip,
+    merchant_id,
+    UPPER(merchant_city) AS cidade_comerciante,
+    UPPER(merchant_state) AS estado_comerciante,
+    zip,
+    mcc,
+    CASE
+      WHEN errors IS NULL THEN
+        CASE
+          WHEN mcc = 1711 THEN 'PLUMBING HEATING AIR CONDITIONING'
+          WHEN mcc = 3000 THEN 'UNITED AIRLINES'
+          WHEN mcc = 3001 THEN 'AMERICAN AIRLINES'
+          WHEN mcc = 3005 THEN 'BRITISH AIRWAYS'
+          WHEN mcc = 3006 THEN 'JAPAN AIRLINES'
+          WHEN mcc = 3007 THEN 'AIR FRANCE'
+          WHEN mcc = 3008 THEN 'LUFTHANSA'
+          WHEN mcc = 3009 THEN 'AIR CANADA'
+          WHEN mcc = 3058 THEN 'DELTA AIR LINES'
+          WHEN mcc = 3066 THEN 'SOUTHWEST AIRLINES'
+          WHEN mcc = 3387 THEN 'ALAMO RENT-A-CAR'
+          WHEN mcc = 3389 THEN 'AVIS RENT-A-CAR'
+          WHEN mcc = 3390 THEN 'DOLLAR RENT-A-CAR'
+          WHEN mcc = 3393 THEN 'NATIONAL CAR RENTAL'
+          WHEN mcc = 3395 THEN 'THRIFTY CAR RENTAL'
+          WHEN mcc = 3405 THEN 'ENTERPRISE RENT-A-CAR'
+          WHEN mcc = 3504 THEN 'HILTON HOTELS'
+          WHEN mcc = 3509 THEN 'MARRIOTT HOTELS'
+          WHEN mcc = 4111 THEN 'LOCAL COMMUTER RAILWAYS'
+          WHEN mcc = 4112 THEN 'PASSENGER RAILWAYS'
+          WHEN mcc = 4121 THEN 'LIMOUSINES AND TAXICABS'
+          WHEN mcc = 4131 THEN 'BUS LINES'
+          WHEN mcc = 4411 THEN 'CRUISE LINES'
+          WHEN mcc = 4457 THEN 'BOAT LEASES AND RENTALS'
+          WHEN mcc = 4468 THEN 'MARINAS AND MARINE SERVICES'
+          WHEN mcc = 4582 THEN 'AIRPORTS AND TERMINALS'
+          WHEN mcc = 4722 THEN 'TRAVEL AGENCIES AND TOUR OPERATORS'
+          WHEN mcc = 4784 THEN 'TOLLS BRIDGES AND ROAD FEES'
+          WHEN mcc = 4829 THEN 'MONEY ORDERS AND WIRE TRANSFERS'
+          WHEN mcc = 4899 THEN 'CABLE AND PAY TELEVISION'
+          WHEN mcc = 4900 THEN 'UTILITIES ELECTRIC GAS WATER'
+          WHEN mcc = 5045 THEN 'ELECTRIC RIDE SHARING'
+          WHEN mcc = 5094 THEN 'ELECTRONIC SHOPPING'
+          WHEN mcc = 5192 THEN 'BOOK STORES'
+          WHEN mcc = 5193 THEN 'FLORISTS'
+          WHEN mcc = 5211 THEN 'LUMBER BUILDING SUPPLIES'
+          WHEN mcc = 5251 THEN 'HARDWARE STORES'
+          WHEN mcc = 5261 THEN 'DIESEL FUEL'
+          WHEN mcc = 5300 THEN 'WHOLESALE CLUBS'
+          WHEN mcc = 5310 THEN 'DEPARTMENT STORES'
+          WHEN mcc = 5311 THEN 'MEN S CLOTHING STORES'
+          WHEN mcc = 5411 THEN 'GROCERY STORES, SUPERMARKETS'
+          WHEN mcc = 5499 THEN 'MISC FOOD STORES'
+          WHEN mcc = 5533 THEN 'BEER, WINE AND LIQUOR STORES'
+          WHEN mcc = 5541 THEN 'SERVICE STATIONS'
+          WHEN mcc = 5621 THEN 'MENS AND BOYS CLOTHING AND ACCESSORIES'
+          WHEN mcc = 5651 THEN 'FAMILY CLOTHING STORES'
+          WHEN mcc = 5655 THEN 'WOMENS ACCESSORY AND SPECIALTY SHOPS'
+          WHEN mcc = 5661 THEN 'SHOE STORES'
+          WHEN mcc = 5712 THEN 'FURNITURE'
+          WHEN mcc = 5719 THEN 'MISC HOUSE FURNISHINGS'
+          WHEN mcc = 5722 THEN 'HOUSEHOLD APPLIANCES'
+          WHEN mcc = 5732 THEN 'ELECTRONICS STORES'
+          WHEN mcc = 5733 THEN 'MUSIC STORES – RECORDS'
+          WHEN mcc = 5812 THEN 'EATING PLACES AND RESTAURANTS'
+          WHEN mcc = 5813 THEN 'DRINKING PLACES'
+          WHEN mcc = 5814 THEN 'FAST FOOD RESTAURANTS'
+          WHEN mcc = 5815 THEN 'DIGITAL GOODS PSYC'
+          WHEN mcc = 5816 THEN 'DIGITAL GOODS LEASES'
+          WHEN mcc = 5912 THEN 'DRUG STORES AND PHARMACIES'
+          WHEN mcc = 5921 THEN 'LIQUOR STORES'
+          WHEN mcc = 5932 THEN 'ANTIQUES'
+          WHEN mcc = 5941 THEN 'SPORTING GOODS STORES'
+          WHEN mcc = 5942 THEN 'BOOK STORES'
+          WHEN mcc = 5947 THEN 'BICYCLE SHOPS'
+          WHEN mcc = 5970 THEN 'ART DEALERS AND GALLERIES'
+          WHEN mcc = 5977 THEN 'COSMETIC STORES'
+          WHEN mcc = 6300 THEN 'INSURANCE SALES'
+          WHEN mcc = 7011 THEN 'LODGINGS MOTELS AND RESORTS'
+          WHEN mcc = 7210 THEN 'COIN-OPERATED AMUSEMENT MACHINES'
+          WHEN mcc = 7230 THEN 'BARBERS AND BEAUTY SHOPS'
+          WHEN mcc = 7276 THEN 'TOBACCO STORES – SMOKE SHOPS'
+          WHEN mcc = 7349 THEN 'CLEANING AND MAINTENANCE'
+          WHEN mcc = 7393 THEN 'DATING AND ESCORT SERVICES'
+          WHEN mcc = 7531 THEN 'AUTOMOTIVE REPAIR SHOPS'
+          WHEN mcc = 7538 THEN 'AUTOMOTIVE SERVICE SHOPS'
+          WHEN mcc = 7542 THEN 'CAR WASHES'
+          WHEN mcc = 7549 THEN 'TIRE RETREADING'
+          WHEN mcc = 7801 THEN 'LANDSCAPE AND HORTICULTURE SERVICES'
+          WHEN mcc = 7802 THEN 'LANDSCAPE CONSULTING'
+          WHEN mcc = 7832 THEN 'MOTION PICTURE THEATERS'
+          WHEN mcc = 7922 THEN 'THEATERS – LIVE PERFORMANCE'
+          WHEN mcc = 7995 THEN 'GAMING TRANSACTIONS'
+          WHEN mcc = 7996 THEN 'AMUSEMENT PARKS'
+          WHEN mcc = 8011 THEN 'DOCTORS OFFICES'
+          WHEN mcc = 8021 THEN 'DENTISTS AND ORTHODONTISTS'
+          WHEN mcc = 8041 THEN 'OPTOMETRISTS AND OPHTHALMOLOGISTS'
+          WHEN mcc = 8043 THEN 'OPTICIANS'
+          WHEN mcc = 8049 THEN 'CHIROPRACTORS'
+          WHEN mcc = 8062 THEN 'HOSPITALS'
+          WHEN mcc = 8099 THEN 'HEALTH AND MEDICAL SERVICES'
+          WHEN mcc = 8111 THEN 'LEGAL SERVICES AND ATTORNEYS'
+          WHEN mcc = 8931 THEN 'ACCOUNTING AUDITING AND BOOKKEEPING'
+          WHEN mcc = 9402 THEN 'POSTAL SERVICES – GOVERNMENT ONLY'
+          WHEN mcc = 3144 THEN 'VIRGIN ATLANTIC (AIRLINES)'
+          WHEN mcc = 3174 THEN 'JETBLUE AIRWAYS (AIRLINES)'
+          WHEN mcc = 3256 THEN 'ALASKA AIRLINES'
+          WHEN mcc = 3359 THEN 'PAYLESS CAR RENTAL'
+          WHEN mcc = 3640 THEN 'HYATT HOTELS'
+          WHEN mcc = 3771 THEN 'CAESAR’S HOTEL AND CASINO'
+          WHEN mcc = 3775 THEN 'SANDS RESORT (HOTEL & CASINO)'
+          WHEN mcc = 4511 THEN 'AIRLINES, NOT ELSEWHERE CLASSIFIED'
+          WHEN mcc = 4814 THEN 'TELECOMMUNICATION SERVICES (PREPAID/RECURRING PHONE)'
+          WHEN mcc = 3075 THEN 'SINGAPORE AIRLINES (AIRLINES)'
+          WHEN mcc = 3132 THEN 'FRONTIER AIRLINES (AIRLINES)'
+          WHEN mcc = 3260 THEN 'SPIRIT AIRLINES'
+          WHEN mcc = 3596 THEN 'HOTEL CODE (GENERIC – NOT SPECIFIED)'
+          WHEN mcc = 3684 THEN 'BUDGET HOST INNS (HOTELS)'
+          WHEN mcc = 3722 THEN 'WYNDHAM HOTEL AND RESORTS'
+          WHEN mcc = 3730 THEN 'MGM GRAND HOTEL'
+          WHEN mcc = 3780 THEN 'DISNEY RESORTS'
+          WHEN mcc = 4214 THEN 'TRANSPORTE RODOVIÁRIO E LOGÍSTICA (ENTREGAS, MUDANÇAS, ARMAZENAGEM)'
+          ELSE null
+        END
+      ELSE UPPER(errors)
+    END AS tipo_erro
+  FROM `bubbly-dominion-465109-v8.estudos.transactions_card`
+  WHERE 1 = 1
+)
+
+, BASE_RISCO AS (
+  SELECT
+    U.id AS client_id,
+    COUNT(DISTINCT T.id) AS total_transacoes,
+    ROUND(AVG(T.quantia), 2) AS valor_medio_transacao,
+    MAX(CASE WHEN C.cartao_na_dark_web = 'SIM' THEN 1 ELSE 0 END) AS flag_dark_web,
+    COUNTIF(T.usa_chip = 'FALSE') / COUNT(*) AS pct_transacao_sem_chip,
+    COUNTIF(T.mcc IN (7393, 7995, 7276)) / COUNT(*) AS pct_mcc_alto_risco,
+    ROUND(U.divida_total / NULLIF(U.renda_anual, 0), 2) AS razao_divida_renda,
+    U.credit_score,
+    C.limite_cartao
+  FROM TRANSACOES T
+  JOIN CARTAO C ON T.card_id = C.id
+  JOIN USUARIOS U ON T.client_id = U.id
+  WHERE 1 = 1
+    AND T.quantia IS NOT NULL
+  GROUP BY ALL
+)
+
+, SEGMENTACAO AS (
+  SELECT
+    *,
+    CASE WHEN flag_dark_web = 1 THEN 4 ELSE 0 END +
+    CASE
+      WHEN credit_score < 500 THEN 3
+      WHEN credit_score BETWEEN 500 AND 649 THEN 2
+      WHEN credit_score BETWEEN 650 AND 699 THEN 1
+      ELSE 0
+    END +
+    CASE
+      WHEN razao_divida_renda > 1.2 THEN 3
+      WHEN razao_divida_renda BETWEEN 0.8 AND 1.2 THEN 2
+      WHEN razao_divida_renda BETWEEN 0.5 AND 0.8 THEN 1
+      ELSE 0
+    END +
+    CASE
+      WHEN pct_mcc_alto_risco > 0.3 THEN 2
+      WHEN pct_mcc_alto_risco > 0.1 THEN 1
+      ELSE 0
+    END +
+    CASE WHEN pct_transacao_sem_chip > 0.4 THEN 1 ELSE 0 END AS score_risco
+  FROM BASE_RISCO
+  WHERE 1 = 1
+)
+
+, CLUSTER_FINAL AS (
+  SELECT *,
+    CASE
+      WHEN score_risco >= 8 THEN 'ALTO RISCO'
+      WHEN score_risco BETWEEN 5 AND 7 THEN 'MÉDIO RISCO'
+      ELSE 'BAIXO RISCO'
+    END AS categoria_risco
+  FROM SEGMENTACAO
+  WHERE 1 = 1
+)
+
+SELECT
+  categoria_risco,
+  COUNT(*) AS total_clientes,
+  ROUND(AVG(score_risco), 2) AS media_score,
+  ROUND(AVG(valor_medio_transacao), 2) AS media_valor_transacao,
+  CONCAT(ROUND(AVG(pct_mcc_alto_risco) * 100, 2), '%') AS pct_mcc_alto_risco_medio,
+  CONCAT(ROUND(AVG(pct_transacao_sem_chip) * 100, 2), '%') AS pct_sem_chip_medio
+FROM CLUSTER_FINAL
+WHERE 1 = 1
+GROUP BY ALL
+ORDER BY total_clientes DESC

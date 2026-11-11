@@ -1,0 +1,100 @@
+WITH ECOM_SHOPIFY_BASE AS (
+  SELECT
+    name AS company_name,
+    `State Country` AS state_country,
+    `Company size` AS company_size,
+    `Minimum Project Size` AS min_project_size,
+    `% focused on ecommerce development` AS ecom_focus,
+    `% focused on shopify` AS shopify_focus,
+    `% focused on magento` AS magento_focus,
+    `% focused on woocommerce` AS woocommerce_focus,
+    `% focused on other` AS other_focus,
+
+    -- Faixa de porte textual
+    CASE
+      WHEN `Company size` LIKE '%1,000%' THEN '1000+'
+      WHEN `Company size` LIKE '%250%' THEN '250-999'
+      WHEN `Company size` LIKE '%50%' THEN '50-249'
+      WHEN `Company size` LIKE '%10%' THEN '10-49'
+      ELSE 'Outros'
+    END AS faixa_porte,
+
+    -- Criação do array de plataformas para facilitar a identificação do foco principal e diversidade
+    ARRAY<STRUCT<plataforma STRING, foco INT64>>[
+      STRUCT('Shopify', `% focused on shopify`),
+      STRUCT('Magento', `% focused on magento`),
+      STRUCT('WooCommerce', `% focused on woocommerce`),
+      STRUCT('Other', `% focused on other`)
+    ] AS plataformas_foco_array
+  FROM `modern-cipher-464713-b2.estudos_sql.ecomerce_shopfy`
+  WHERE 1 = 1
+)
+
+, PLATAFORMAS_ANALISE AS (
+  SELECT
+    *,
+    -- Foco principal: Seleciona a plataforma com maior foco do array
+    (SELECT plataforma FROM UNNEST(plataformas_foco_array) ORDER BY foco DESC LIMIT 1) AS foco_principal,
+    -- Diversidade de atuação: Conta quantas plataformas têm foco > 0
+    (SELECT COUNT(1) FROM UNNEST(plataformas_foco_array) WHERE foco > 0) AS plataformas_atuantes
+  FROM ECOM_SHOPIFY_BASE
+  WHERE 1 = 1
+)
+
+, ESTATISTICAS_DE_PORTE AS (
+  SELECT
+    faixa_porte,
+    COUNT(*) AS total_empresas,
+    ROUND(AVG(ecom_focus), 2) AS media_foco_ecom,
+    ROUND(AVG(min_project_size), 2) AS media_ticket,
+    ROUND(AVG(plataformas_atuantes), 2) AS media_diversidade,
+    COUNTIF(plataformas_atuantes >= 3) AS empresas_multiplataforma
+  FROM PLATAFORMAS_ANALISE
+  WHERE 1 = 1
+  GROUP BY ALL
+)
+
+, ESTATISTICAS_DE_ESTADO AS (
+  SELECT
+    state_country,
+    COUNT(*) AS total_empresas,
+    COUNT(DISTINCT foco_principal) AS total_focos_distintos,
+    ARRAY_AGG(DISTINCT foco_principal) AS plataformas_presentes,
+    MAX(ecom_focus) AS maior_foco_ecom,
+    MIN(ecom_focus) AS menor_foco_ecom
+  FROM PLATAFORMAS_ANALISE
+  WHERE 1 = 1
+  GROUP BY ALL
+)
+
+, TOP_EMPRESAS AS (
+  SELECT
+    company_name,
+    foco_principal,
+    ecom_focus,
+    min_project_size,
+    ROW_NUMBER() OVER (PARTITION BY foco_principal ORDER BY ecom_focus DESC, min_project_size DESC) AS posicao
+  FROM PLATAFORMAS_ANALISE
+  WHERE 1 = 1
+)
+
+SELECT
+  te.company_name,
+  te.foco_principal,
+  te.ecom_focus,
+  te.min_project_size,
+  te.posicao,
+  pa.faixa_porte,
+  edp.media_ticket,
+  ede.state_country,
+  ede.total_focos_distintos,
+  ede.plataformas_presentes
+FROM TOP_EMPRESAS AS te
+JOIN PLATAFORMAS_ANALISE AS pa
+  ON te.company_name = pa.company_name
+JOIN ESTATISTICAS_DE_PORTE AS edp
+  ON pa.faixa_porte = edp.faixa_porte
+JOIN ESTATISTICAS_DE_ESTADO AS ede
+  ON pa.state_country = ede.state_country
+WHERE 1 = 1
+ORDER BY foco_principal ASC, posicao ASC
