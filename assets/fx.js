@@ -14,7 +14,7 @@
   try { localStorage.removeItem("fx-theme"); } catch (e) {}
   if (!reduce) {
     const tv = document.body.appendChild(Object.assign(document.createElement("div"), { className: "fx-tv", ariaHidden: "true" }));
-    tv.innerHTML = `<div class="tv-screen"><canvas></canvas><p class="tv-boot">&gt; conectando ao portfólio<span>_</span></p></div>
+    tv.innerHTML = `<div class="tv-screen"><canvas></canvas><div class="tv-load" role="progressbar" aria-label="Carregando"><i></i></div></div>
       <div class="tv-lid top"></div><div class="tv-lid bot"></div><div class="tv-line"></div>`;
     document.documentElement.classList.add("fx-tv-on");
     const cv = $("canvas", tv), cx = cv.getContext("2d"), GL = "01アイウエオカキクケコサシスセソタチツテトナニヌネノABCDEF<>#$%";
@@ -50,6 +50,30 @@
     timers.push(setTimeout(finish, 2700));
     setTimeout(() => document.body.classList.remove("fx-poweron"), 3200);
   }
+
+  /* ---------- troca de página: TV desliga, pula para a seção e liga de novo ---------- */
+  const page = document.body.appendChild(Object.assign(document.createElement("div"), { className: "fx-page", ariaHidden: "true" }));
+  page.innerHTML = `<div class="tv-lid top"></div><div class="tv-lid bot"></div><div class="tv-line"></div>`;
+  let pageBusy = false;
+  function tvPage(go) {
+    if (reduce || pageBusy) { go(); return; }
+    pageBusy = true;
+    page.className = "fx-page closing";
+    setTimeout(() => {
+      go();
+      page.className = "fx-page opening";
+      document.body.classList.remove("fx-poweron"); void document.body.offsetWidth; document.body.classList.add("fx-poweron");
+      setTimeout(() => { page.className = "fx-page"; document.body.classList.remove("fx-poweron"); pageBusy = false; }, 900);
+    }, 420);
+  }
+  window.tvPage = tvPage;
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="#"]'); if (!a || e.ctrlKey || e.metaKey) return;
+    const id = a.getAttribute("href").slice(1), target = id && document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    tvPage(() => { target.scrollIntoView({ behavior: "instant", block: "start" }); try { history.replaceState(null, "", "#" + id); } catch (err) {} });
+  });
 
   /* ---------- cursor ---------- */
   let mx = innerWidth / 2, my = innerHeight / 2, gx = mx, gy = my;

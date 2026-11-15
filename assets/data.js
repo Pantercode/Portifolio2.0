@@ -21,8 +21,8 @@ window.PORTFOLIO = {
     ],
     skillsImage: "img/biografia-1.jpg",
     skillGroups: [
-      { h: "BI e Visualização", items: ["Power BI", "DAX", "Power Query", "Excel", "Google Sheets", "Looker", "Looker Studio", "Metabase", "GoodData", "Tableau", "Qlik Sense", "Apache Superset", "MicroStrategy", "GA4"] },
-      { h: "Linguagens e Python", items: ["SQL", "Python", "Pandas", "NumPy", "Polars", "PySpark", "Scikit-learn", "Matplotlib", "Seaborn", "Plotly", "Plotly Dash", "Streamlit", "FastAPI", "Jupyter", "R", "VBA"] },
+      { h: "BI e Visualização", items: ["Power BI", "DAX", "Power Query", "Excel", "Google Sheets", "Looker Studio", "Metabase", "GoodData", "Apache Superset", "MicroStrategy", "GA4"] },
+      { h: "Linguagens e Python", items: ["SQL", "Python", "Pandas", "NumPy", "Polars", "PySpark", "Scikit-learn", "Matplotlib", "Seaborn", "Plotly", "Plotly Dash", "Streamlit", "FastAPI", "Jupyter"] },
       { h: "Engenharia de Dados e Orquestração", items: ["ETL / ELT", "Apache Airflow", "Prefect", "Dagster", "Apache Spark", "Databricks", "Kafka", "Airbyte", "Fivetran", "Data Factory", "Docker", "Git", "GitHub Actions", "CI/CD", "Terraform"] },
       { h: "Analytics Engineering", items: ["dbt", "Modelagem Dimensional (Kimball)", "Star Schema", "SCD Tipo 2", "Arquitetura Medalhão", "Semantic Layer", "Data Quality", "Great Expectations", "Write-Audit-Publish", "Data Contracts"] },
       { h: "Bancos e Data Warehouses", items: ["BigQuery", "Snowflake", "AWS Redshift", "DuckDB", "PostgreSQL", "MySQL", "SQL Server", "Oracle", "MongoDB", "Supabase", "Presto / Trino", "Delta Lake", "Parquet"] },

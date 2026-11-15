@@ -37,6 +37,9 @@
       els.forEach(el => { el.classList.remove("tv-off"); void el.offsetWidth; el.classList.add("tv-on"); });
       setTimeout(() => { if (token === tvToken) els.forEach(el => el.classList.remove("tv-on")); }, 480);
     };
+    /* interferência: faixa de luz varrendo a tela */
+    document.body.classList.remove("fx-switching"); void document.body.offsetWidth; document.body.classList.add("fx-switching");
+    setTimeout(() => { if (token === tvToken) document.body.classList.remove("fx-switching"); }, 900);
     if (skipOff) { turnOn(); return; }
     els.forEach(el => { el.classList.remove("tv-on"); void el.offsetWidth; el.classList.add("tv-off"); });
     setTimeout(turnOn, 230);
@@ -111,7 +114,7 @@
     { n: techs.size, l: "Tecnologias aplicadas", ic: "code", go: () => location.hash = "sobre" }
   ];
   $("#boardKpis").innerHTML = kpis.map((k, i) => `<div class="kpi ${k.hot ? "hot" : ""}" data-k="${i}"><span class="ico">${ICONS[k.ic]}</span><div><b>${k.n}</b><small>${k.l}</small></div></div>`).join("");
-  $$("#boardKpis .kpi").forEach(el => el.addEventListener("click", () => { kpis[+el.dataset.k].go(); document.getElementById("projetos").scrollIntoView({ behavior: "smooth" }); }));
+  $$("#boardKpis .kpi").forEach(el => el.addEventListener("click", () => { const go = () => { kpis[+el.dataset.k].go(); document.getElementById("projetos").scrollIntoView({ behavior: window.tvPage ? "instant" : "smooth" }); }; window.tvPage ? window.tvPage(go) : go(); }));
 
   const arc = $("#boardArc");
   arc.innerHTML = P.map((p, i) => {
@@ -340,7 +343,7 @@
     }
     $$(".embed [data-load]").forEach(b => b.addEventListener("click", () => {
       const box = b.closest(".embed");
-      box.insertAdjacentHTML("beforeend", `<iframe src="${box.dataset.src}" title="${box.dataset.title}" allowfullscreen></iframe><div class="ep-loading"><span class="ai-dots"><i></i><i></i><i></i></span>Carregando painel…</div>`);
+      box.insertAdjacentHTML("beforeend", `<iframe src="${box.dataset.src}" title="${box.dataset.title}" allowfullscreen></iframe><div class="ep-loading" role="progressbar" aria-label="Carregando painel"><span class="load-bar"><i></i></span></div>`);
       $(".embed-poster", box).classList.add("gone");
       $("iframe", box).addEventListener("load", () => { const l = $(".ep-loading", box); l && l.remove(); });
     }));
