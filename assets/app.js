@@ -24,6 +24,24 @@
   const hash = s => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
   const linksCount = p => (p.links || []).length + (p.embed ? 1 : 0);
 
+  /* efeito de TV de tubo: desliga os elementos, troca o conteúdo e liga de novo */
+  const TV_REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let tvToken = 0;
+  function tvSwitch(els, render, { skipOff = false } = {}) {
+    els = els.filter(Boolean);
+    if (TV_REDUCE || !els.length) { render(); return; }
+    const token = ++tvToken;
+    const turnOn = () => {
+      if (token !== tvToken) return;
+      render();
+      els.forEach(el => { el.classList.remove("tv-off"); void el.offsetWidth; el.classList.add("tv-on"); });
+      setTimeout(() => { if (token === tvToken) els.forEach(el => el.classList.remove("tv-on")); }, 480);
+    };
+    if (skipOff) { turnOn(); return; }
+    els.forEach(el => { el.classList.remove("tv-on"); void el.offsetWidth; el.classList.add("tv-off"); });
+    setTimeout(turnOn, 230);
+  }
+
   /* ---------- image with graceful fallback ---------- */
   /* imagem com substituto desenhado caso o arquivo não exista/carregue */
   function imgHTML(src, alt, kind = "gallery", extra = "") {
@@ -187,7 +205,12 @@
       </li>`;
     }).join("");
     $$(".pitem").forEach(li => {
-      li.addEventListener("click", () => { state.sel = li.dataset.id; renderList(); renderPreview(); });
+      li.addEventListener("click", () => {
+        if (state.sel === li.dataset.id) return;
+        state.sel = li.dataset.id;
+        $$(".pitem").forEach(x => x.classList.toggle("active", x === li));
+        tvSwitch([$("#preview")], renderPreview);
+      });
       li.addEventListener("dblclick", () => openProject(li.dataset.id));
       li.addEventListener("keydown", e => { if (e.key === "Enter") openProject(li.dataset.id); });
     });
@@ -217,9 +240,9 @@
       </div>`;
     $("[data-open]", $("#preview")).addEventListener("click", () => openProject(p.id));
   }
-  function selectCat(c) { state.cat = c; state.q = ""; $("#ask").value = ""; state.sel = null; renderCats(); renderList(); }
+  function selectCat(c) { state.cat = c; state.q = ""; $("#ask").value = ""; state.sel = null; renderCats(); tvSwitch([$("#plist"), $("#preview")], renderList); }
 
-  $("#askbar").addEventListener("submit", e => { e.preventDefault(); state.q = $("#ask").value.trim(); state.sel = null; renderCats(); renderList(); });
+  $("#askbar").addEventListener("submit", e => { e.preventDefault(); state.q = $("#ask").value.trim(); state.sel = null; renderCats(); tvSwitch([$("#plist"), $("#preview")], renderList); });
   $("#ask").addEventListener("input", e => { if (!e.target.value.trim() && state.q) { state.q = ""; renderCats(); renderList(); } });
 
   /* ---------- DRAWER ---------- */
@@ -266,6 +289,10 @@
       <div class="embed ${isPdf ? "ratio-pdf" : "ratio-16x9"}" data-src="${esc(e.url)}" data-title="${esc(title)}">${poster}</div></div>`;
   }
   function openProject(id, push = true) {
+    if (!P.some(x => x.id === id)) return;
+    tvSwitch([$("#drawerBody")], () => renderProject(id, push), { skipOff: !drawer.classList.contains("open") });
+  }
+  function renderProject(id, push) {
     const p = P.find(x => x.id === id); if (!p) return;
     const c = catById[p.cat];
     let h = `<div class="d-head">
@@ -359,7 +386,8 @@
   $("#pRole").textContent = person.role;
   $("#pLoc").textContent = person.location;
   $("#bio").textContent = person.bio;
-  $("#skills").innerHTML = person.skills.map(s => `<span class="chip">${esc(s)}</span>`).join("");
+  $("#skills").innerHTML = (person.skillGroups || [{ items: person.skills }]).map(g =>
+    `<div class="skill-group">${g.h ? `<small>${esc(g.h)}</small>` : ""}<div class="chips">${g.items.map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div></div>`).join("");
   const soc = person.social.map(s => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${SOCIAL_ICON[s.label] || ""}${esc(s.label)}</a>`).join("");
   $("#social").innerHTML = soc; $("#socialFoot").innerHTML = soc;
   $("#certGrid").innerHTML = D.certifications.map(c => `<div class="glass cert reveal"><div class="img">${imgHTML(c.img, c.name, "cert", c.issuer)}</div><b>${esc(c.name)}</b><small class="muted" style="text-align:center;font-size:12px;margin-top:-8px">${esc(c.issuer || "")}</small></div>`).join("");

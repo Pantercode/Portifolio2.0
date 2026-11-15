@@ -116,3 +116,23 @@ main .reveal.in img { filter: var(--fxi); }
   .fx-scan, .fx-sweep, .fx-cursor, .fx-cursor-dot, .fx-flash { display: none }
   .holo::before, .links path.flow, .grad { animation: none }
 }
+
+/* ---------- troca de projeto: TV desliga e liga ---------- */
+.tv-off, .tv-on { transform-origin: 50% 50%; will-change: transform, filter; }
+.tv-off { animation: tvSwOff .23s cubic-bezier(.7, 0, .9, .4) forwards; pointer-events: none; }
+.tv-on { animation: tvSwOn .46s cubic-bezier(.15, .7, .3, 1) both; }
+@keyframes tvSwOff {
+  0%   { transform: scale(1, 1); filter: brightness(1); opacity: 1 }
+  60%  { transform: scale(1, .012); filter: brightness(3.5) saturate(1.6); opacity: 1 }
+  100% { transform: scale(0, .012); filter: brightness(6); opacity: 0 } }
+@keyframes tvSwOn {
+  0%   { transform: scale(0, .012); filter: brightness(6); opacity: 0 }
+  25%  { transform: scale(1, .012); filter: brightness(4); opacity: 1 }
+  60%  { transform: scale(1, 1.03); filter: brightness(1.5) }
+  75%  { filter: brightness(.8) }
+  100% { transform: scale(1, 1); filter: none; opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .tv-off, .tv-on { animation: none } }
+
+/* ---------- ferramentas agrupadas por área ---------- */
+#skills.chips { display: grid; gap: 16px; }
+.skill-group small { display: block; margin-bottom: 8px; font: 600 11px var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }

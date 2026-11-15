@@ -20,7 +20,18 @@ window.PORTFOLIO = {
       { label: "GitHub", url: "https://github.com/Pantercode/" }
     ],
     skillsImage: "img/biografia-1.jpg",
-    skills: ["Metabase","Excel","Power BI","Power Automate","Power Apps","Python","NumPy","Pandas","Seaborn","Plotly","Matplotlib","Google Cloud","GA4","BigQuery","Looker","AWS S3","AWS Redshift","Microsoft Azure","Data Factory","SQL","MySQL","PostgreSQL","PySpark","dbt","Databricks","Figma","CSS","HTML","JavaScript","Google Apps Script"]
+    skillGroups: [
+      { h: "BI e Visualização", items: ["Power BI", "DAX", "Power Query", "Excel", "Google Sheets", "Looker", "Looker Studio", "Metabase", "GoodData", "Tableau", "Qlik Sense", "Apache Superset", "MicroStrategy", "GA4"] },
+      { h: "Linguagens e Python", items: ["SQL", "Python", "Pandas", "NumPy", "Polars", "PySpark", "Scikit-learn", "Matplotlib", "Seaborn", "Plotly", "Plotly Dash", "Streamlit", "FastAPI", "Jupyter", "R", "VBA"] },
+      { h: "Engenharia de Dados e Orquestração", items: ["ETL / ELT", "Apache Airflow", "Prefect", "Dagster", "Apache Spark", "Databricks", "Kafka", "Airbyte", "Fivetran", "Data Factory", "Docker", "Git", "GitHub Actions", "CI/CD", "Terraform"] },
+      { h: "Analytics Engineering", items: ["dbt", "Modelagem Dimensional (Kimball)", "Star Schema", "SCD Tipo 2", "Arquitetura Medalhão", "Semantic Layer", "Data Quality", "Great Expectations", "Write-Audit-Publish", "Data Contracts"] },
+      { h: "Bancos e Data Warehouses", items: ["BigQuery", "Snowflake", "AWS Redshift", "DuckDB", "PostgreSQL", "MySQL", "SQL Server", "Oracle", "MongoDB", "Supabase", "Presto / Trino", "Delta Lake", "Parquet"] },
+      { h: "Cloud", items: ["Google Cloud", "Cloud Storage", "AWS S3", "AWS Glue", "AWS Lambda", "Microsoft Azure", "Microsoft Fabric", "Render", "Vercel"] },
+      { h: "Automação e Low-code", items: ["Google Apps Script", "AppSheet", "Power Automate", "Power Apps", "n8n", "clasp"] },
+      { h: "IA Generativa e Agentes", items: ["Agentes de IA", "Google Gemini", "LangChain", "OpenAI API", "Claude", "MCP", "RAG", "Function Calling", "Pydantic"] },
+      { h: "Web e Design", items: ["HTML", "CSS", "JavaScript", "D3.js", "Figma"] }
+    ],
+    get skills() { return this.skillGroups.flatMap(g => g.items); }
   },
 
   career: [
