@@ -75,6 +75,41 @@
     tvPage(() => { target.scrollIntoView({ behavior: "instant", block: "start" }); try { history.replaceState(null, "", "#" + id); } catch (err) {} });
   });
 
+  /* ---------- chuva de letras discreta, de vez em quando, atrás do conteúdo ---------- */
+  if (!reduce) {
+    const cv = document.body.appendChild(Object.assign(document.createElement("canvas"), { className: "fx-rain", ariaHidden: "true" }));
+    const cx = cv.getContext("2d"), GL = "01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホABCDEF<>#$%";
+    const FS = 16;
+    let W = 0, H = 0, cols = [], running = false, raf = 0, last = 0, endAt = 0;
+    const size = () => { const d = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0); };
+    size(); addEventListener("resize", size);
+    function burst() {
+      if (running || document.hidden || document.documentElement.classList.contains("fx-tv-on")) return schedule();
+      const n = Math.max(6, Math.round(W / 110));                     // poucas colunas espalhadas
+      cols = Array.from({ length: n }, () => ({ x: Math.floor(Math.random() * W / FS) * FS, y: -Math.random() * H * .6, v: .6 + Math.random() * .9, len: 8 + (Math.random() * 14 | 0) }));
+      running = true; endAt = performance.now() + 4200 + Math.random() * 2500;
+      cv.classList.add("on");
+      raf = requestAnimationFrame(tick);
+    }
+    function tick(t) {
+      if (t - last < 50) { raf = requestAnimationFrame(tick); return; }
+      last = t;
+      cx.fillStyle = "rgba(0,0,0,.18)"; cx.globalCompositeOperation = "destination-out"; cx.fillRect(0, 0, W, H);
+      cx.globalCompositeOperation = "source-over"; cx.font = `${FS}px "JetBrains Mono", monospace`;
+      let alive = 0;
+      cols.forEach(c => {
+        c.y += FS * c.v;
+        if (c.y - c.len * FS < H) alive++;
+        cx.fillStyle = Math.random() < .1 ? "#f5e04a" : "#b8ffc4"; cx.fillText(GL[Math.random() * GL.length | 0], c.x, c.y);
+        cx.fillStyle = "#00ff41"; cx.fillText(GL[Math.random() * GL.length | 0], c.x, c.y - FS);
+      });
+      if (t > endAt || !alive) { cv.classList.remove("on"); setTimeout(() => { cx.clearRect(0, 0, W, H); running = false; schedule(); }, 1600); return; }
+      raf = requestAnimationFrame(tick);
+    }
+    function schedule() { setTimeout(burst, 9000 + Math.random() * 12000); } // a cada 9 a 21 segundos
+    setTimeout(burst, 6000);
+  }
+
   /* ---------- cursor ---------- */
   let mx = innerWidth / 2, my = innerHeight / 2, gx = mx, gy = my;
   addEventListener("pointermove", e => {
