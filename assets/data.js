@@ -382,6 +382,71 @@ window.PORTFOLIO = {
         { h: "Tecnologias Utilizadas", ul: ["<b>Python 3.11</b> → Extração de dados e geração de seeds.", "<b>dbt-core 1.7</b> → Transformações, materializações e testes.", "<b>PostgreSQL 17</b> → Armazenamento estruturado dos dados.", "<b>Docker/Docker Compose</b> → Orquestração de serviços.", "<b>Pandas / Requests / PyYAML</b> → Manipulação e integração de dados."] }
       ]
     },
+    {
+      id: "museus-brasil", cat: "dbt", title: "Museus do Brasil · ETL com dbt e DuckDB, Dash em Python e Agentes de IA",
+      live: true,
+      summary: "Onde há museu no Brasil, onde não há, e como eles estão organizados. Pipeline completo de Analytics Engineering: lake particionado → dbt com Write-Audit-Publish e quarentena → painel em Python → agente de IA → GoodData. Usa dados reais do Cadastro Nacional de Museus (Ibram) cruzados com o Censo 2022.",
+      stack: ["dbt-core 1.12", "DuckDB", "Python 3.12", "FastAPI", "Plotly", "Google Gemini", "GoodData (MCP)", "Render"],
+      links: [
+        { label: "Painel publicado", url: "https://museus-do-brasil.onrender.com/", primary: true },
+        { label: "Repositório no GitHub", url: "https://github.com/Pantercode/DBT_Agente_Goodata" },
+        { label: "Dashboard no GoodData (PDF)", url: "https://github.com/Pantercode/DBT_Agente_Goodata/blob/main/docs/gooddata-dashboard.pdf" }
+      ],
+      intro: ["O projeto parte de uma pergunta: quantos brasileiros moram longe de qualquer museu, e como os museus que existem se organizam? A resposta: <b>3.775 museus ativos</b>, mas em só <b>25% dos municípios</b>. <b>64 milhões de pessoas (31,5%)</b> vivem em cidade sem museu; no Maranhão, 71%."],
+      sections: [
+        { h: "Em um minuto", ul: [
+          "<b>Os dados:</b> 4.159 museus e 536 Pontos de Memória do Ibram (API pública), 5.571 municípios e a população do Censo 2022 (IBGE).",
+          "<b>Indicadores:</b> 3.775 museus ativos · 1,86 por 100 mil habitantes · 25% dos municípios têm museu · 31,5% da população sem museu na cidade · 24% têm plano museológico · 50% sem nenhum recurso de acessibilidade.",
+          "<b>O que tem aqui:</b> pipeline completo de Analytics Engineering, com qualidade de dados que barra o que está errado, um painel, um agente que responde em português e o mesmo modelo no GoodData.",
+          "<b>Testes:</b> 112 testes dbt, 3 testes unitários e 69 testes pytest; o agente acertou 8 de 8 perguntas na avaliação."
+        ] },
+        { h: "O painel", ul: [
+          "<b>Páginas:</b> Panorama, Território (cobertura por porte de município, maiores cidades sem museu e os 3.659 museus com coordenada), Gestão (plano museológico, regimento e política de acervo por natureza administrativa), Acessibilidade e Qualidade (saúde de cada coleta, etapas do pipeline e todos os testes).",
+          "<b>Filtros:</b> região e UF na URL (<code>/?regiao=NE</code>). Clicar numa UF no mapa filtra o painel inteiro.",
+          "<b>Ctrl + K:</b> paleta de comandos para digitar uma UF, uma página ou uma pergunta em português.",
+          "<b>IA no contexto:</b> todo gráfico tem <i>Perguntar sobre isto</i>; o assistente abre ao lado já sabendo qual gráfico e qual recorte você está vendo.",
+          "<b>Movimento com propósito:</b> blocos entram em sequência, números contam até o valor e as barras crescem. Tudo desliga com <code>prefers-reduced-motion</code>.",
+          "<b>Acessível:</b> paleta validada para daltonismo, uma tabela com os mesmos números em cada gráfico e navegação por teclado.",
+          "<b>Sem estado no servidor:</b> o FastAPI monta as figuras Plotly e o navegador só desenha."
+        ] },
+        { h: "Como funciona", ol: [
+          "<b>Coleta (ingestao/):</b> baixa a API do Ibram (Tainacan) e do IBGE com retry e paginação paralela; grava um arquivo por dia com manifesto (contagem e hash).",
+          "<b>Transformação (dbt/):</b> 35 modelos em 3 camadas: esquema estrela, SCD2 incremental, One Big Table com STRUCT/ARRAY e semantic layer.",
+          "<b>Qualidade (dbt/macros/):</b> valida cada coleta, roda 112 testes e só publica o que passou (Write-Audit-Publish).",
+          "<b>Orquestração (orquestracao/):</b> um comando roda tudo e diz se publicou, se bloqueou ou se isolou uma coleta ruim.",
+          "<b>Consumo (painel/, agente/, gooddata/):</b> painel, assistente de IA e GoodData leem a mesma camada publicada, com as mesmas métricas."
+        ] },
+        { h: "Modelagem", ul: [
+          "<b>fct_museus_diario:</b> um registro por museu por dia, incremental por partição (reprocessa só os dias novos: <code>delete+insert</code> no DuckDB, <code>insert_overwrite</code> particionado e clusterizado no BigQuery).",
+          "<b>dim_museu:</b> histórico de cada museu (SCD2) incremental, que compara os dias novos com as cerca de 4 mil versões abertas sem reler o histórico.",
+          "<b>bridge_museu_tipologia:</b> museu × tipologia de acervo, com <code>peso = 1/n</code> para cada museu contar uma vez só.",
+          "<b>obt_museus:</b> One Big Table, um museu por linha, com grupos aninhados em STRUCT e listas em ARRAY; é a tabela preferida do agente.",
+          "<b>agg_*:</b> indicadores prontos por país, UF e município, com as razões calculadas uma vez só (ninguém tira média de razão).",
+          "<b>Dimensões:</b> data, museu, município, UF, esfera administrativa, tipo de museu, temática e tipologia de acervo."
+        ] },
+        { h: "Qualidade e quarentena", p: ["Se a coleta de amanhã vier quebrada, o painel continua certo. Cada dia coletado é validado antes de entrar: bate com o manifesto? O volume está dentro da faixa? Os campos obrigatórios estão preenchidos? Há duplicatas?"], ul: [
+          "<b>Coleta quebrada</b> (metade dos museus, campos vazios): o dia vai para quarentena com o motivo por extenso. Os marts ficam no dia anterior e a publicação acontece normalmente.",
+          "<b>Regra de negócio quebrada</b> (pesos do índice somando 101): o circuit breaker barra a publicação inteira e o painel fica na última versão aprovada.",
+          "<b>Tudo certo:</b> publica. Os 22 marts trocam juntos, numa transação.",
+          "<b>Testado de verdade:</b> uma coleta simulada com metade dos museus e 14% sem UF foi para quarentena com o motivo <i>\"volume 2079 fora da faixa (régua 4159); campos obrigatórios vazios (sem UF 14.4%)\"</i>, e o painel continuou mostrando 3.775 museus ativos. O CI repete esse cenário a cada PR."
+        ] },
+        { h: "Agente de IA", p: ["Pergunte em português e a resposta chega ao vivo: cada passo aparece enquanto acontece (<i>Consultando…</i>, <i>Desenhando…</i>), o gráfico é desenhado na conversa quando faz sentido, o texto cita a fonte e mostra o SQL que rodou, e a resposta termina com três próximas perguntas clicáveis. Acerto medido: 8 de 8 perguntas com o número certo, com 1,5 passo em média."], ul: [
+          "<b>Memória de exemplos:</b> 17 perguntas com SQL conferido. As 3 mais parecidas entram no contexto de cada pergunta, com a armadilha anotada. O CI roda todos os SQL.",
+          "<b>Aprende com o uso:</b> 👍/👎 em cada resposta; as respostas aprovadas viram novos exemplos, via PR.",
+          "<b>Sabe o que você vê:</b> o filtro do painel (UF, região) vai como contexto.",
+          "<b>Seguro:</b> só lê. O SQL é validado pela árvore sintática (só SELECT, só a camada publicada) e a conexão não tem acesso a arquivo nem rede.",
+          "<b>Resiliente:</b> se um modelo Gemini estiver sem cota ou lento, o agente passa para o próximo sozinho."
+        ] },
+        { h: "GoodData", p: ["O mesmo modelo publicado no <b>GoodData Cloud</b>, montado por código e pelo <b>servidor MCP do GoodData</b>:"], ul: [
+          "Dados no armazenamento do próprio GoodData (sem banco externo).",
+          "Modelo lógico com Município e Museu ligados.",
+          "11 métricas MAQL.",
+          "Dashboard com 10 visualizações em 4 seções e filtros de região e UF.",
+          "<b>Os números batem com o painel:</b> 3.775 ativos, 4.159 cadastrados, 25,1% dos municípios com museu e 31,5% da população sem museu.",
+          "📄 <a href=\"https://github.com/Pantercode/DBT_Agente_Goodata/blob/main/docs/gooddata-dashboard.pdf\" target=\"_blank\" rel=\"noopener\">Baixar o dashboard em PDF</a>"
+        ] }
+      ]
+    },
 
     /* ===================== ETL AO DASH COM IA ===================== */
     {

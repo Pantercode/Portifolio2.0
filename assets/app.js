@@ -6,7 +6,7 @@
   const esc = (s = "") => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const strip = (s = "") => s.replace(/<[^>]+>/g, "");
   const catById = Object.fromEntries(D.categories.map(c => [c.id, c]));
-  const COLORS = { powerbi: "#2de2c0", looker: "#2de2c0", metabase: "#2de2c0", python: "#7aa7ff", dbt: "#7aa7ff", "etl-ia": "#f2c46d", appscript: "#f2c46d", langchain: "#f2c46d", sql: "#ff7a7a" };
+  const COLORS = { powerbi: "#00ff41", looker: "#00ff41", metabase: "#00ff41", python: "#b6ff3b", dbt: "#b6ff3b", "etl-ia": "#f5e04a", appscript: "#f5e04a", langchain: "#f5e04a", sql: "#ffd23f" };
   const ICONS = {
     chart: '<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
     code: '<svg viewBox="0 0 24 24"><path d="m8 6-6 6 6 6M16 6l6 6-6 6"/></svg>',
@@ -30,13 +30,13 @@
     return `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" data-kind="${kind}" data-extra="${esc(extra)}" onerror="window.__imgFail&&window.__imgFail(this)" />`;
   }
   const ABBR = { "PL-900": "PL-900", "DP-900": "DP-900", "AZ-900": "AZ-900", "Scrum": "SFPC", "Business Intelligence": "BIFPC", "Lean Six Sigma": "LSSWB", "Databricks Lakehouse": "LAKE", "Google Analytics": "GA" };
-  const ISSUER_COLOR = { Microsoft: "#7aa7ff", CertiProf: "#2de2c0", Databricks: "#ff7a5c", Google: "#f2c46d", Alura: "#2de2c0" };
+  const ISSUER_COLOR = { Microsoft: "#b6ff3b", CertiProf: "#00ff41", Databricks: "#d4ff3b", Google: "#f5e04a", Alura: "#00ff41" };
   function fallbackHTML(kind, alt, extra) {
     if (kind === "cert") {
-      const c = ISSUER_COLOR[extra] || "#2de2c0", ab = ABBR[alt] || alt.slice(0, 5).toUpperCase();
+      const c = ISSUER_COLOR[extra] || "#00ff41", ab = ABBR[alt] || alt.slice(0, 5).toUpperCase();
       return `<div class="badge-art" style="--bc:${c}"><svg viewBox="0 0 120 120" aria-hidden="true">
-        <defs><linearGradient id="g${hash(alt)}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c}"/><stop offset="1" stop-color="#f2c46d"/></linearGradient></defs>
-        <polygon points="60,6 107,33 107,87 60,114 13,87 13,33" fill="rgba(2,10,9,.85)" stroke="url(#g${hash(alt)})" stroke-width="3"/>
+        <defs><linearGradient id="g${hash(alt)}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c}"/><stop offset="1" stop-color="#f5e04a"/></linearGradient></defs>
+        <polygon points="60,6 107,33 107,87 60,114 13,87 13,33" fill="rgba(1,10,2,.85)" stroke="url(#g${hash(alt)})" stroke-width="3"/>
         <polygon points="60,18 96,39 96,81 60,102 24,81 24,39" fill="none" stroke="${c}" stroke-opacity=".25" stroke-dasharray="3 4"/>
         </svg><div class="ba-txt"><b>${esc(ab)}</b><small>${esc(extra || "")}</small></div><span class="ba-check">✓</span></div>`;
     }
@@ -68,7 +68,7 @@
       for (const p of pts) {
         p.y -= p.s; p.a += .01; if (p.y < 0) p.y = h;
         x.globalAlpha = .25 + Math.abs(Math.sin(p.a)) * .55;
-        x.fillStyle = p.r > 1.4 ? "#f2c46d" : "#2de2c0";
+        x.fillStyle = p.r > 1.4 ? "#f5e04a" : "#00ff41";
         x.beginPath(); x.arc(p.x, p.y, p.r * devicePixelRatio, 0, 7); x.fill();
       }
       if (!reduce) requestAnimationFrame(draw);
@@ -81,7 +81,7 @@
   const dashCount = P.filter(p => p.embed && (p.embed.type === "powerbi" || p.embed.type === "looker")).length;
   const liveCount = P.filter(p => p.live).length;
 
-  $(".orb").style.background = `url(${D.person.photo}) center/cover, #06110f`;
+  $(".orb").style.background = `url(${D.person.photo}) center/cover, #041106`;
   $("#heroLead").textContent = `${D.person.role} · ${D.person.tagline}. ${P.length} projetos reais, de dashboards executivos a pipelines em camadas e apps com agentes de IA.`;
   $("#hubSub").innerHTML = `<span class="tag tag-cat">${P.length} projetos</span><span class="tag tag-live">${liveCount} no ar</span>`;
 
@@ -111,7 +111,7 @@
     const kp = $("#boardKpis"), hotK = $(".kpi.hot", kp);
     const x1 = kp.offsetLeft + hotK.offsetLeft + hotK.offsetWidth, y1 = kp.offsetTop + hotK.offsetTop + hotK.offsetHeight / 2;
     const hub = $(".hub"), hx = hub.offsetLeft + hub.offsetWidth / 2, hy = hub.offsetTop + hub.offsetHeight / 2;
-    let d = `<defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#f2c46d" stop-opacity=".9"/><stop offset="1" stop-color="#2de2c0" stop-opacity=".35"/></linearGradient></defs>`;
+    let d = `<defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#f5e04a" stop-opacity=".9"/><stop offset="1" stop-color="#00ff41" stop-opacity=".35"/></linearGradient></defs>`;
     $$(".kpi", kp).forEach(k => {
       const kx = kp.offsetLeft + k.offsetLeft, ky = kp.offsetTop + k.offsetTop + k.offsetHeight / 2;
       d += `<path d="M${hx} ${hy} C ${hx + 90} ${hy}, ${kx - 70} ${ky}, ${kx} ${ky}"/>`;

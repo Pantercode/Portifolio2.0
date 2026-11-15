@@ -10,44 +10,46 @@
   const dot = document.body.appendChild(Object.assign(document.createElement("div"), { className: "fx-cursor-dot" }));
   const glow = $(".fx-cursor");
 
-  /* ---------- paletas ---------- */
-  const THEMES = [
-    { name: "Aurora", hue: 0, c: "#2de2c0" },
-    { name: "Plasma", hue: 70, c: "#3aa8ff" },
-    { name: "Nebula", hue: 120, c: "#9b6bff" },
-    { name: "Aço", hue: 30, sat: .32, c: "#8fa6bf" },
-    { name: "Solar", hue: 220, c: "#ff8a3d" },
-    { name: "Matrix", hue: -55, c: "#5dff6a" }
-  ];
-  let cur = 0, auto = !reduce, timer = null;
-  const dock = document.body.appendChild(Object.assign(document.createElement("div"), { className: "fx-dock", role: "group", ariaLabel: "Paleta de cores" }));
-  dock.innerHTML = `<span class="lbl">Paleta</span>${THEMES.map((t, i) => `<button class="sw ${i === 0 ? "on" : ""}" style="--c:${t.c}" data-i="${i}" title="${t.name}" aria-label="Paleta ${t.name}"></button>`).join("")}
-    <span class="name" id="fxName">${THEMES[0].name}</span><button class="auto ${auto ? "on" : ""}" type="button" id="fxAuto"><i></i>Auto</button>`;
-
-  function vibrate() {
-    if (reduce) return;
-    document.body.classList.remove("fx-glitching"); void document.body.offsetWidth;
-    document.body.classList.add("fx-glitching");
-    setTimeout(() => document.body.classList.remove("fx-glitching"), 950);
-    try { navigator.vibrate && navigator.vibrate([18, 30, 18, 30, 40]); } catch (e) {}
+  /* ---------- abertura: chuva de código + TV de tubo desligando e ligando ---------- */
+  try { localStorage.removeItem("fx-theme"); } catch (e) {}
+  if (!reduce) {
+    const tv = document.body.appendChild(Object.assign(document.createElement("div"), { className: "fx-tv", ariaHidden: "true" }));
+    tv.innerHTML = `<div class="tv-screen"><canvas></canvas><p class="tv-boot">&gt; conectando ao portfólio<span>_</span></p></div>
+      <div class="tv-lid top"></div><div class="tv-lid bot"></div><div class="tv-line"></div>`;
+    document.documentElement.classList.add("fx-tv-on");
+    const cv = $("canvas", tv), cx = cv.getContext("2d"), GL = "01アイウエオカキクケコサシスセソタチツテトナニヌネノABCDEF<>#$%";
+    const fs = 18, dpr = Math.min(devicePixelRatio || 1, 2);
+    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; cx.scale(dpr, dpr);
+    const drops = Array.from({ length: Math.ceil(innerWidth / fs) }, () => Math.random() * -40);
+    cx.fillStyle = "#010701"; cx.fillRect(0, 0, innerWidth, innerHeight);
+    let raf, last = 0;
+    (function rain(t) {
+      raf = requestAnimationFrame(rain);
+      if (t - last < 45) return; last = t;
+      cx.fillStyle = "rgba(1,7,1,.16)"; cx.fillRect(0, 0, innerWidth, innerHeight);
+      cx.font = `${fs}px "JetBrains Mono", monospace`;
+      drops.forEach((y, i) => {
+        const ch = GL[(Math.random() * GL.length) | 0], px = i * fs, py = y * fs;
+        cx.fillStyle = Math.random() < .08 ? "#f5e04a" : "#d8ffd8"; cx.fillText(ch, px, py);
+        cx.fillStyle = "#00ff41"; cx.fillText(GL[(Math.random() * GL.length) | 0], px, py - fs);
+        drops[i] = py > innerHeight && Math.random() > .975 ? 0 : y + 1;
+      });
+    })(0);
+    let done = false;
+    const timers = [];
+    const finish = () => {
+      if (done) return; done = true;
+      timers.forEach(clearTimeout); cancelAnimationFrame(raf);
+      tv.remove(); document.documentElement.classList.remove("fx-tv-on");
+      removeEventListener("keydown", skip); removeEventListener("pointerdown", skip);
+    };
+    const skip = () => { tv.classList.add("off", "open"); timers.push(setTimeout(finish, 260)); };
+    addEventListener("keydown", skip, { once: true }); addEventListener("pointerdown", skip, { once: true });
+    timers.push(setTimeout(() => tv.classList.add("off"), 1300));             // tela encolhe numa linha e num ponto
+    timers.push(setTimeout(() => { cancelAnimationFrame(raf); tv.classList.add("open"); document.body.classList.add("fx-poweron"); }, 1950)); // liga o site
+    timers.push(setTimeout(finish, 2700));
+    setTimeout(() => document.body.classList.remove("fx-poweron"), 3200);
   }
-  function setTheme(i, fromUser) {
-    cur = (i + THEMES.length) % THEMES.length;
-    root.style.setProperty("--hue", THEMES[cur].hue + "deg"); root.style.setProperty("--sat", THEMES[cur].sat || 1);
-    $$(".sw", dock).forEach((b, k) => b.classList.toggle("on", k === cur));
-    $("#fxName").textContent = THEMES[cur].name;
-    vibrate();
-    if (fromUser) { auto = false; $("#fxAuto").classList.remove("on"); clearInterval(timer); }
-    try { localStorage.setItem("fx-theme", cur); } catch (e) {}
-  }
-  $$(".sw", dock).forEach(b => b.addEventListener("click", () => setTheme(+b.dataset.i, true)));
-  $("#fxAuto").addEventListener("click", () => {
-    auto = !auto; $("#fxAuto").classList.toggle("on", auto);
-    clearInterval(timer); if (auto) { setTheme(cur + 1); timer = setInterval(() => setTheme(cur + 1), 9000); }
-  });
-  try { const saved = +localStorage.getItem("fx-theme"); if (saved > 0 && saved < THEMES.length) { root.style.transition = "none"; root.style.setProperty("--hue", THEMES[saved].hue + "deg"); root.style.setProperty("--sat", THEMES[saved].sat || 1); cur = saved; $$(".sw", dock).forEach((b, k) => b.classList.toggle("on", k === cur)); $("#fxName").textContent = THEMES[cur].name; requestAnimationFrame(() => root.style.transition = ""); } } catch (e) {}
-  if (auto) timer = setInterval(() => setTheme(cur + 1), 9000);
-  addEventListener("keydown", e => { if (e.altKey && /^[1-6]$/.test(e.key)) setTheme(+e.key - 1, true); });
 
   /* ---------- cursor ---------- */
   let mx = innerWidth / 2, my = innerHeight / 2, gx = mx, gy = my;
@@ -66,7 +68,7 @@
       const p = Object.assign(document.createElement("i"), { className: "fx-burst" });
       p.style.left = e.clientX + "px"; p.style.top = e.clientY + "px";
       p.style.setProperty("--dx", Math.cos(a) * d + "px"); p.style.setProperty("--dy", Math.sin(a) * d + "px");
-      if (i % 3 === 0) p.style.background = "#f2c46d";
+      if (i % 3 === 0) p.style.background = "#f5e04a";
       document.body.appendChild(p); setTimeout(() => p.remove(), 750);
     }
   });
