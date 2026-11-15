@@ -166,5 +166,5 @@ main .reveal.in img { filter: var(--fxi); }
 /* ---------- chuva de letras discreta (de vez em quando, atrás do conteúdo) ---------- */
 .fx-rain { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
   opacity: 0; transition: opacity 1.4s ease; mix-blend-mode: screen; }
-.fx-rain.on { opacity: .22; }
+.fx-rain.on { opacity: .26; }
 @media (prefers-reduced-motion: reduce) { .fx-rain { display: none } }

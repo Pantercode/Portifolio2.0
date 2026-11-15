@@ -100,8 +100,8 @@
       cols.forEach(c => {
         c.y += FS * c.v;
         if (c.y - c.len * FS < H) alive++;
-        cx.fillStyle = Math.random() < .1 ? "#f5e04a" : "#b8ffc4"; cx.fillText(GL[Math.random() * GL.length | 0], c.x, c.y);
-        cx.fillStyle = "#00ff41"; cx.fillText(GL[Math.random() * GL.length | 0], c.x, c.y - FS);
+        cx.fillStyle = Math.random() < .1 ? "#f5e04a" : "#ffd29a"; cx.fillText(GL[Math.random() * GL.length | 0], c.x, c.y);
+        cx.fillStyle = "#ff9a2e"; cx.fillText(GL[Math.random() * GL.length | 0], c.x, c.y - FS);
       });
       if (t > endAt || !alive) { cv.classList.remove("on"); setTimeout(() => { cx.clearRect(0, 0, W, H); running = false; schedule(); }, 1600); return; }
       raf = requestAnimationFrame(tick);
