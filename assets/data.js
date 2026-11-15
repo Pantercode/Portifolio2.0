@@ -394,7 +394,7 @@ window.PORTFOLIO = {
       ]
     },
     {
-      id: "museus-brasil", cat: "dbt", title: "Museus do Brasil · ETL com dbt e DuckDB, Dash em Python e Agentes de IA",
+      id: "museus-brasil", cat: "dbt", title: "Museus do Brasil · ETL com dbt e DuckDB, Dash em Python, Agentes de IA e GoodData",
       live: true,
       summary: "Onde há museu no Brasil, onde não há, e como eles estão organizados. Pipeline completo de Analytics Engineering: lake particionado → dbt com Write-Audit-Publish e quarentena → painel em Python → agente de IA → GoodData. Usa dados reais do Cadastro Nacional de Museus (Ibram) cruzados com o Censo 2022.",
       stack: ["dbt-core 1.12", "DuckDB", "Python 3.12", "FastAPI", "Plotly", "Google Gemini", "GoodData", "Render"],
