@@ -109,7 +109,7 @@
   const kpis = [
     { n: dashCount, l: "Dashboards publicados", ic: "chart", go: () => selectCat("powerbi") },
     { n: P.length, l: "Projetos no portfólio", ic: "grid", hot: true, go: () => selectCat("all") },
-    { n: liveCount, l: "Apps com IA no ar", ic: "spark", go: () => selectCat("live") },
+    { n: liveCount, l: "Agentes IA · Python · JavaScript", ic: "spark", go: () => selectCat("live") },
     { n: D.categories.length, l: "Áreas de atuação", ic: "layers", go: () => selectCat("all") },
     { n: techs.size, l: "Tecnologias aplicadas", ic: "code", go: () => location.hash = "sobre" }
   ];
@@ -175,9 +175,9 @@
   let state = { cat: "all", q: "", sel: null };
   const catsEl = $("#cats");
   function renderCats() {
-    const items = [{ id: "all", label: "Todos os projetos", n: P.length }, { id: "live", label: "Apps no ar", n: liveCount },
+    const items = [{ id: "all", label: "Todos os projetos", n: P.length }, { id: "live", label: "Agentes IA · Python · JavaScript", n: liveCount },
       ...D.categories.map(c => ({ id: c.id, label: c.label, n: P.filter(p => p.cat === c.id).length }))];
-    catsEl.innerHTML = items.map(c => `<button class="cat ${state.cat === c.id && !state.q ? "active" : ""}" data-cat="${c.id}" type="button"><span class="n">${c.n}</span><span class="l">${esc(c.label)}</span></button>`).join("");
+    catsEl.innerHTML = items.map(c => `<button class="cat ${state.cat === c.id && !state.q ? "active" : ""}" data-cat="${c.id}" type="button"><span class="n">${c.n}</span><span class="l">${esc(c.label)}${c.sub ? `<small class="cat-sub">${esc(c.sub)}</small>` : ""}</span></button>`).join("");
     $$(".cat", catsEl).forEach(b => b.addEventListener("click", () => selectCat(b.dataset.cat)));
   }
   function filtered() {
@@ -195,7 +195,7 @@
   }
   function renderList() {
     const list = filtered();
-    $("#plistTitle").textContent = state.q ? `Resultados para “${state.q}”` : state.cat === "all" ? "Todos os projetos" : state.cat === "live" ? "Apps no ar" : catById[state.cat].label;
+    $("#plistTitle").textContent = state.q ? `Resultados para “${state.q}”` : state.cat === "all" ? "Todos os projetos" : state.cat === "live" ? "Agentes IA · Python · JavaScript" : catById[state.cat].label;
     $("#plistCount").textContent = `${list.length} ${list.length === 1 ? "projeto" : "projetos"}`;
     if (!list.length) { $("#plist").innerHTML = `<li class="muted" style="padding:20px">Nenhum projeto encontrado. Tente “Python”, “Power BI” ou “Gemini”.</li>`; return; }
     if (!state.sel || !list.some(p => p.id === state.sel)) state.sel = list[0].id;

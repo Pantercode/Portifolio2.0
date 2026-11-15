@@ -389,3 +389,4 @@ pre.ascii{font:13px/1.5 var(--mono);background:#010701;border:1px solid var(--li
   .drawer-close{width:34px;height:34px;font-size:18px;margin:10px 10px 0 0;background:rgba(5,20,7,.75)}
   .drawer-body{padding-top:20px}
 }
+.cat .cat-sub{display:block;margin-top:2px;font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:.01em}
