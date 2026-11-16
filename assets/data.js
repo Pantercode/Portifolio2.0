@@ -273,6 +273,47 @@ window.PORTFOLIO = {
       ]
     },
     {
+      id: "pyspark-cotacoes", cat: "python", title: "Cotações da Bolsa · Pipeline PySpark com Airflow e Docker",
+      subtitle: "Carga incremental com validação, quarentena e reprocessamento só do que deu erro",
+      summary: "Pipeline em PySpark orquestrado pelo Apache Airflow que busca cotações diárias de ações (IBM, AAPL, MSFT) na API da Alpha Vantage e grava em camadas raw → staging → intermediate → marts, tudo rodando em Docker. A carga é incremental: só processa o que é novo ou o que deu erro em execução anterior. Dado já validado não é reprocessado nem regravado, e registro inválido vai para quarentena com o motivo.",
+      stack: ["PySpark 4.0", "Apache Airflow 3.1", "Docker", "Docker Compose", "Python 3.12", "Java 17", "API Alpha Vantage", "Parquet", "pytest", "Requests"],
+      links: [{ label: "Repositório no GitHub", url: "https://github.com/Pantercode/start_to_end_pyspark" }],
+      sections: [
+        { h: "Arquitetura da Solução", pre: "API Alpha Vantage\n      │\n      ▼\nraw          JSON como veio da API (nunca é alterado)\n      │\n      ▼\nstaging      tabela tipada, uma linha por ação/dia\n      │\n      ▼\nintermediate validação ─┬─ válidos   → int_cotacoes_validadas\n                        ├─ inválidos → int_quarentena (com o motivo)\n                        └─ status    → controle_processamento\n      │\n      ▼\nmarts        mart_cotacoes_diarias · mart_resumo_mensal\n\nDAG no Airflow: raw >> staging >> intermediate >> marts" },
+        { h: "Camadas e Tabelas", ul: [
+          "<b>raw:</b> resposta da API como veio, particionada por <code>run_id</code>. Nunca é alterada.",
+          "<b>staging · stg_cotacoes_diarias:</b> uma linha por ação/dia, já tipada. Valor que não converte vira null.",
+          "<b>intermediate · int_cotacoes_validadas:</b> só os registros aprovados na validação, particionados por ação e data do pregão.",
+          "<b>intermediate · int_quarentena:</b> registros reprovados com a lista de erros.",
+          "<b>controle · controle_processamento:</b> status OK/ERRO de cada ação/dia em cada execução.",
+          "<b>marts · mart_cotacoes_diarias:</b> retorno diário %, amplitude % e médias móveis de 5 e 20 dias.",
+          "<b>marts · mart_resumo_mensal:</b> abertura, fechamento, máxima, mínima, volume e variação do mês.",
+          "Todas as tabelas, menos o raw, são gravadas em Parquet."
+        ] },
+        { h: "Lógica Incremental", p: ["Usa o <code>partitionOverwriteMode = dynamic</code> do Spark: o overwrite só substitui as partições presentes no DataFrame gravado."], ol: [
+          "Lê a staging da execução atual.",
+          "Lê o controle e pega o último status de cada ação/dia.",
+          "Remove tudo que já está OK com um <code>left_anti join</code>. Sobram só os dias novos e os que deram ERRO antes.",
+          "Aplica as regras de validação no que sobrou.",
+          "Grava os válidos sobrescrevendo só as partições deles, os inválidos na quarentena e o status de todos no controle."
+        ] },
+        { h: "Qualidade de Dados", p: ["As regras ficam num dicionário em <code>validacao.py</code>; para criar uma nova, basta adicionar uma entrada."], ul: [
+          "Ação vazia, data inválida ou data no futuro.",
+          "Preço nulo, não numérico ou menor ou igual a zero.",
+          "Máxima menor que a mínima; abertura ou fechamento fora da faixa entre mínima e máxima.",
+          "Volume nulo ou negativo e registro duplicado no mesmo dia.",
+          "<b>Testado:</b> num cenário simulado, dois dias chegam errados na primeira execução e vão para a quarentena; na segunda, a fonte manda os dias corrigidos e só eles são reprocessados."
+        ] },
+        { h: "Componentes Principais", ul: [
+          "<b>PySpark:</b> leitura, tipagem com schema fixo, validação, carga incremental e cálculo dos indicadores com window functions (retorno, médias móveis).",
+          "<b>Apache Airflow:</b> DAG com uma task por camada. Uma task com falha pode ser refeita com <i>Clear</i> sem refazer as anteriores, e reexecutar o mesmo <code>run_id</code> dá o mesmo resultado.",
+          "<b>Docker e Docker Compose:</b> uma imagem com Airflow, Java 17 e PySpark; um único <code>docker compose up</code> sobe tudo.",
+          "<b>pytest:</b> testes da validação e do incremental (erro seguido de correção), sem chamar a API.",
+          "<b>API Alpha Vantage:</b> cotações diárias dos últimos 100 pregões, com a chave guardada em variável de ambiente."
+        ] }
+      ]
+    },
+    {
       id: "covid-python", cat: "python", title: "Covid-19 Mundial",
       summary: "Análise exploratória dos dados mundiais de Covid-19 em Python, com o relatório completo exportado em PDF.",
       stack: ["Python", "Jupyter", "Pandas"],
