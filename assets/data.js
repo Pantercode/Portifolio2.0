@@ -96,7 +96,9 @@ window.PORTFOLIO = {
     { id: "langchain", label: "LangChain · JS · Gemini", icon: "spark" },
     { id: "dbt", label: "dbt Core", icon: "layers" },
     { id: "looker", label: "Looker Studio", icon: "chart" },
-    { id: "metabase", label: "Metabase", icon: "chart" }
+    { id: "metabase", label: "Metabase", icon: "chart" },
+    /* sem botão próprio: os projetos dela aparecem no filtro "Agentes IA · Python · JavaScript" */
+    { id: "agentes-py-js", label: "Agentes IA · Python · JavaScript", icon: "spark", hidden: true }
   ],
 
   projects: [
@@ -542,7 +544,7 @@ window.PORTFOLIO = {
     },
 
     {
-      id: "raiz-rag", cat: "etl-ia", title: "RAIZ · RAG e Agente de IA contra as causas do crime no Rio",
+      id: "raiz-rag", cat: "agentes-py-js", title: "RAIZ · RAG e Agente de IA contra as causas do crime no Rio",
       live: true,
       subtitle: "Inteligência territorial com dados reais do ISP-RJ, RAG híbrido e agente com LLM",
       summary: "O RAIZ é um painel para quem decide políticas públicas no Rio de Janeiro. Ele usa os dados oficiais de criminalidade do Instituto de Segurança Pública (ISP-RJ) para responder a uma pergunta que a resposta policial sozinha não responde: onde e com quem a prevenção social evita mais crimes por real investido? Tudo pode ser perguntado em português a um agente de IA e enviado como relatório em PDF personalizado por e-mail.",

@@ -6,7 +6,7 @@
   const esc = (s = "") => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const strip = (s = "") => s.replace(/<[^>]+>/g, "");
   const catById = Object.fromEntries(D.categories.map(c => [c.id, c]));
-  const COLORS = { powerbi: "#00ff41", looker: "#00ff41", metabase: "#00ff41", python: "#b6ff3b", dbt: "#b6ff3b", "etl-ia": "#f5e04a", appscript: "#f5e04a", langchain: "#f5e04a", sql: "#ffd23f" };
+  const COLORS = { "agentes-py-js": "#f5e04a", powerbi: "#00ff41", looker: "#00ff41", metabase: "#00ff41", python: "#b6ff3b", dbt: "#b6ff3b", "etl-ia": "#f5e04a", appscript: "#f5e04a", langchain: "#f5e04a", sql: "#ffd23f" };
   const ICONS = {
     chart: '<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
     code: '<svg viewBox="0 0 24 24"><path d="m8 6-6 6 6 6M16 6l6 6-6 6"/></svg>',
@@ -110,7 +110,7 @@
     { n: dashCount, l: "Dashboards publicados", ic: "chart", go: () => selectCat("powerbi") },
     { n: P.length, l: "Projetos no portfólio", ic: "grid", hot: true, go: () => selectCat("all") },
     { n: liveCount, l: "Agentes IA · Python · JavaScript", ic: "spark", go: () => selectCat("live") },
-    { n: D.categories.length, l: "Áreas de atuação", ic: "layers", go: () => selectCat("all") },
+    { n: D.categories.filter(c => !c.hidden).length, l: "Áreas de atuação", ic: "layers", go: () => selectCat("all") },
     { n: techs.size, l: "Tecnologias aplicadas", ic: "code", go: () => location.hash = "sobre" }
   ];
   $("#boardKpis").innerHTML = kpis.map((k, i) => `<div class="kpi ${k.hot ? "hot" : ""}" data-k="${i}"><span class="ico">${ICONS[k.ic]}</span><div><b>${k.n}</b><small>${k.l}</small></div></div>`).join("");
@@ -176,7 +176,7 @@
   const catsEl = $("#cats");
   function renderCats() {
     const items = [{ id: "all", label: "Todos os projetos", n: P.length }, { id: "live", label: "Agentes IA · Python · JavaScript", n: liveCount },
-      ...D.categories.map(c => ({ id: c.id, label: c.label, n: P.filter(p => p.cat === c.id).length }))];
+      ...D.categories.filter(c => !c.hidden).map(c => ({ id: c.id, label: c.label, n: P.filter(p => p.cat === c.id).length }))];
     catsEl.innerHTML = items.map(c => `<button class="cat ${state.cat === c.id && !state.q ? "active" : ""}" data-cat="${c.id}" type="button"><span class="n">${c.n}</span><span class="l">${esc(c.label)}${c.sub ? `<small class="cat-sub">${esc(c.sub)}</small>` : ""}</span></button>`).join("");
     $$(".cat", catsEl).forEach(b => b.addEventListener("click", () => selectCat(b.dataset.cat)));
   }
