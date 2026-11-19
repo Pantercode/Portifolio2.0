@@ -541,6 +541,58 @@ window.PORTFOLIO = {
       ]
     },
 
+    {
+      id: "raiz-rag", cat: "etl-ia", title: "RAIZ · RAG e Agente de IA contra as causas do crime no Rio",
+      live: true,
+      subtitle: "Inteligência territorial com dados reais do ISP-RJ, RAG híbrido e agente com LLM",
+      summary: "O RAIZ é um painel para quem decide políticas públicas no Rio de Janeiro. Ele usa os dados oficiais de criminalidade do Instituto de Segurança Pública (ISP-RJ) para responder a uma pergunta que a resposta policial sozinha não responde: onde e com quem a prevenção social evita mais crimes por real investido? Tudo pode ser perguntado em português a um agente de IA e enviado como relatório em PDF personalizado por e-mail.",
+      stack: ["Python", "Plotly Dash", "JavaScript", "Google Gemini", "RAG híbrido", "Function Calling", "Scikit-learn", "Pandas", "NumPy", "SciPy", "ReportLab", "Docker", "Render", "GitHub Actions"],
+      links: [
+        { label: "Abrir o RAIZ", url: "https://raiz-v2xb.onrender.com/", primary: true },
+        { label: "Repositório no GitHub", url: "https://github.com/Pantercode/Rag_Analise_de_criminalidade/tree/main" }
+      ],
+      intro: ["A maior parte das pessoas presas no Rio é jovem, está no começo da trajetória, fora da escola e com pouca renda, e a maioria dos crimes é patrimonial. Mesmo assim, a resposta do Estado costuma chegar só depois do crime. O ISP-RJ publica, mês a mês e por delegacia, o que acontece em cada território, mas esses números raramente chegam de forma utilizável a quem cuida de educação, assistência social, trabalho, saúde e urbanismo. O RAIZ faz essa ponte: transforma a base do ISP em diagnósticos por bairro e comunidade e recomenda ações concretas, com custo, público e forma de medir resultado."],
+      sections: [
+        { h: "O que ele responde", ul: [
+          "<b>Qual crime predomina em cada bairro e comunidade</b>, e quais estão acima da média da cidade.",
+          "<b>Quem está entrando no crime em cada lugar:</b> idade, escolaridade, trabalho e renda.",
+          "<b>Qual programa social atende cada perfil:</b> renda protetiva para famílias de adolescentes, escola em tempo integral, primeiro emprego, saída do tráfico, grupos para autores de violência doméstica, entre outros.",
+          "<b>Com um orçamento X, o que financiar primeiro</b>, quantas reincidências isso evita e quanto custo prisional deixa de existir.",
+          "<b>Uma recomendação final</b> para o recorte escolhido: onde agir, para quem, o que fazer, quanto custa, como medir e um plano de 90 dias."
+        ] },
+        { h: "RAG híbrido (roda local, sem custo de embeddings)", ol: [
+          "<b>Entendimento da consulta:</b> detecta bairros, comunidades, crimes, faixas etárias e zonas citados, com tolerância a acento e maiúsculas, e transforma em filtros.",
+          "<b>Três buscas em paralelo:</b> por palavras (TF-IDF, comportamento tipo BM25), por pedaços de palavras (aguenta erro de digitação como \"trafco\") e semântica (LSA, que aproxima sinônimos como \"assalto\" e \"roubo\").",
+          "<b>Fusão dos resultados</b> por Reciprocal Rank Fusion (RRF), com reforço para as entidades encontradas.",
+          "<b>Diversificação por MMR</b>, para não devolver várias fichas iguais.",
+          "<b>Trilha de evidências:</b> cada resultado volta com o tipo, a nota e de qual busca veio, e o painel mostra isso ao usuário."
+        ] },
+        { h: "Agente de IA", ul: [
+          "<b>LLM com ferramentas:</b> o Google Gemini chama funções Python para buscar contexto no RAG, calcular estatísticas, montar rankings de bairros, consultar fichas e trazer os dados reais de cada território.",
+          "<b>Resiliente:</b> se um modelo estiver sem cota ou sobrecarregado, passa automaticamente para o próximo da lista.",
+          "<b>Relatório:</b> gera um PDF personalizado com gráficos e envia por e-mail ao gestor responsável."
+        ] },
+        { h: "Qualidade da IA (medida)", ul: [
+          "<b>Busca de informações (RAG): 81/100</b> em 323 perguntas com gabarito, incluindo erros de digitação e sinônimos.",
+          "<b>Respostas do agente: 10 de 10</b> em perguntas com resposta conhecida.",
+          "As notas aparecem no próprio painel."
+        ] },
+        { h: "Princípios e limites", ul: [
+          "<b>Prevenção, não punição:</b> o objetivo é financiar o que tira pessoas da rota do crime antes da prisão.",
+          "<b>Dados reais por território, nenhuma pessoa real:</b> os números por bairro são do ISP-RJ; as fichas individuais são fictícias, geradas para respeitar a LGPD e calibradas pelos números reais de cada delegacia.",
+          "<b>Território não é culpado:</b> o painel fala da dinâmica criminal de um lugar, nunca dos seus moradores.",
+          "<b>Premissas à vista:</b> efeito dos programas e custo da prisão são ajustáveis no simulador, e a recomendação sempre propõe um piloto com grupo de comparação."
+        ] },
+        { h: "Componentes Principais", ul: [
+          "<b>Python + Plotly Dash:</b> painel interativo em que filtrar por zona, bairro, idade ou crime (ou clicar num gráfico) recalcula a página inteira; gráficos com a conclusão no título e simulador de orçamento.",
+          "<b>JavaScript:</b> interações do painel no navegador e guia de três passos na primeira visita.",
+          "<b>Scikit-learn:</b> índices TF-IDF e LSA (SVD) do RAG; classificação de perfil, risco e programa indicado.",
+          "<b>ReportLab + Matplotlib:</b> relatório em PDF gerado no servidor, sem navegador.",
+          "<b>Docker + Render:</b> a imagem baixa a base do ISP e monta o índice da IA durante o build; publicado no plano gratuito, com GitHub Actions mantendo o app acordado."
+        ] }
+      ]
+    },
+
     /* ===================== APPS SCRIPT ===================== */
     {
       id: "nba", cat: "appscript", title: "LLM Agentes NBA",
