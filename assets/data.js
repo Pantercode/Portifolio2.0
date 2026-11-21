@@ -504,12 +504,12 @@ window.PORTFOLIO = {
 
     /* ===================== ETL AO DASH COM IA ===================== */
     {
-      id: "censo-escolar", cat: "etl-ia", title: "Educação · Pipeline ETL com PySpark e Dash com Agentes de IA",
+      id: "censo-escolar", cat: "etl-ia", title: "Censo Escolar · ETL + Dashboard com IA generativa",
       live: true,
-      summary: "Este projeto implementa um pipeline de dados completo para os microdados do Censo Escolar da Educação Básica (INEP), utilizando PySpark, dbt e PostgreSQL (Supabase), e termina num dashboard público e gratuito publicado no Render, com inteligência artificial generativa (Google Gemini) para explicar os dados e responder perguntas em português.",
+      summary: "<b>Idade · Escolaridade · Localidade</b> dos alunos matriculados no Brasil, do dado bruto do INEP a um painel público e gratuito. Pipeline de dados completo sobre o <b>Censo Escolar da Educação Básica (INEP)</b>, com PySpark, dbt e Supabase (PostgreSQL), terminando num <b>dashboard público e gratuito</b>, que pode ser incorporado via <code>&lt;iframe&gt;</code>, com um chat de <b>IA generativa</b> (Google Gemini) para perguntar sobre os dados em português. 🌐 <a href=\"https://censo-escolar-dashboard.onrender.com/\" target=\"_blank\" rel=\"noopener\">Acessar a aplicação web</a>",
       stack: ["PySpark", "dbt", "Supabase (PostgreSQL)", "Plotly Dash", "Google Gemini", "Docker", "Render"],
       links: [
-        { label: "Dashboard publicado", url: "https://censo-escolar-dashboard.onrender.com/", primary: true },
+        { label: "Aplicação web (Dashboard)", url: "https://censo-escolar-dashboard.onrender.com/", primary: true },
         { label: "Repositório no GitHub", url: "https://github.com/Pantercode/etl_completo_ao_dash_usando_ia" }
       ],
       intro: ["O objetivo é extrair, organizar e disponibilizar os dados em camadas estruturadas (Landing → Bronze → Gold → Diamond), deixando-os prontos para análise e visualização, sem depender de ferramentas de BI pagas, como Power BI ou Looker Studio."],
