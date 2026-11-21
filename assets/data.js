@@ -543,6 +543,49 @@ window.PORTFOLIO = {
     },
 
     {
+      id: "gharchive-beam", cat: "python", title: "GH Archive · Pipeline Medalhão com Apache Beam, PySpark e DuckDB",
+      summary: "Pipeline de dados sobre os eventos públicos do GitHub (<a href=\"https://www.gharchive.org/\" target=\"_blank\" rel=\"noopener\">GH Archive</a>) em arquitetura medalhão até a camada <b>diamond</b>. A bronze usa <b>Apache Beam</b>, a silver usa <b>PySpark</b>, e a gold e a diamond rodam no <b>DuckDB</b> com procedures, dimensões <b>SCD tipo 2</b> e quality gates. A orquestração é do <b>Airflow 3</b>, a infraestrutura é provisionada por <b>Terraform</b> com esteira <b>CI/CD</b>, e um assistente <b>RAG</b> (Gemini) responde perguntas sobre os dados e sobre o próprio projeto.",
+      stack: ["Python 3.12", "Apache Beam", "PySpark", "Java (JRE)", "DuckDB", "SQL", "Parquet", "Requests", "Pandas", "NumPy", "Apache Airflow 3", "PostgreSQL", "Docker", "Docker Compose", "Terraform", "Google Cloud (GCP)", "Cloud Storage", "Secret Manager", "Artifact Registry", "Workload Identity Federation", "GitHub Actions", "CI/CD", "Google Gemini (google-genai)", "RAG", "BM25", "Embeddings", "Texto-para-SQL", "Streamlit", "pytest", "Ruff"],
+      links: [
+        { label: "Repositório no GitHub", url: "https://github.com/Pantercode/Etl_Apache_Beam", primary: true }
+      ],
+      intro: ["Fluxo: data.gharchive.org → landing (requests, SHA-256) → bronze (Apache Beam, dead-letter) → silver (PySpark, 5 tabelas tipadas) → gold (DuckDB, estrela + SCD2, procedures) → diamond (DuckDB, KPIs e rankings) → assistente RAG (Gemini, texto-para-SQL + documentação citada)."],
+      sections: [
+        { h: "Resultado da carga (15/01/2024, 15h às 17h UTC)", ul: [
+          "<b>785.389 eventos</b> reconciliados da bronze até a diamond, com 0 linhas rejeitadas e 0 chaves no membro desconhecido.",
+          "Cerca de 260 mil eventos, 60 mil atores e 80 mil repositórios por hora; taxa de merge de PRs entre 75% e 78%.",
+          "<b>SCD2 com histórico real:</b> 3.348 repositórios e 8 atores ganharam mais de uma versão em 3 horas (renomeações, troca de linguagem, metadado descoberto).",
+          "Top 3 do dia em engajamento: <code>DataTalksClub/data-engineering-zoomcamp</code>, <code>maybe-finance/maybe</code> e <code>vanna-ai/vanna</code>.",
+          "Todos os quality gates passaram nas 3 horas."
+        ] },
+        { h: "Camadas", ol: [
+          "<b>Landing (requests):</b> arquivo <code>.json.gz</code> da hora com manifesto de bytes e SHA-256; download atômico com retry.",
+          "<b>Bronze (Apache Beam):</b> Parquet bruto, uma linha por evento válido; os inválidos vão para um dead-letter em JSONL com o motivo.",
+          "<b>Silver (PySpark):</b> <code>events</code>, <code>push_commits</code>, <code>pull_requests</code>, <code>issues</code> e <code>repo_metadata</code>, com schema explícito, deduplicação e e-mail pseudonimizado.",
+          "<b>Gold (DuckDB):</b> modelo estrela com <code>dim_actor</code> e <code>dim_repo</code> (SCD2), <code>dim_date</code>, <code>dim_event_type</code> e as fatos de eventos, pushes e pull requests.",
+          "<b>Diamond (DuckDB):</b> KPIs por hora da plataforma, scorecard diário por repositório, tendência de linguagens e perfil de contribuidores."
+        ] },
+        { h: "Destaques de engenharia", ul: [
+          "<b>Procedures no DuckDB:</b> o DuckDB não tem stored procedures, então cada uma é um <code>.sql</code> versionado, executado dentro de uma transação, com parâmetros via <code>SET VARIABLE</code> e registro de métricas em <code>etl.procedure_run</code>.",
+          "<b>SCD2 independente da ordem de carga:</b> uma hora que falhou pode ser carregada depois das seguintes; as versões se encaixam no meio do histórico, as chaves existentes são preservadas e os fatos afetados são re-apontados. Um script prova sobre os dados reais que o resultado é idêntico ao da carga em ordem.",
+          "<b>Proteção contra falhas:</b> carga incompleta não substitui a publicada, a gold é protegida por gate antes de receber a silver, e só as horas faltantes são reprocessadas (comandos <code>gaps</code> e <code>backfill</code> e uma DAG própria)."
+        ] },
+        { h: "Assistente RAG", ul: [
+          "<b>Recuperação híbrida:</b> BM25 e embeddings Gemini, fundidos por Reciprocal Rank Fusion e reordenados pelo próprio modelo.",
+          "<b>Números nunca saem da memória do modelo:</b> perguntas de dados viram SQL, executado em conexão somente leitura, com validação de <code>SELECT</code> único, limite de linhas, timeout e até 2 autocorreções.",
+          "<b>Corpus:</b> documentação, SQL, código Python, DAGs, Terraform, CI/CD e um catálogo com estatísticas reais de cada tabela.",
+          "<b>Validação:</b> 100% de acurácia em 23 perguntas (13/13 de dados e 10/10 sobre o projeto), com mínimo de 80% exigido como gate de deploy; latência mediana de 5,2 s.",
+          "Interface em Streamlit com o chat no topo e a documentação visual de cada etapa embaixo."
+        ] },
+        { h: "Orquestração, infraestrutura e CI/CD", ul: [
+          "<b>Airflow 3:</b> DAG horária que vai do download às procedures da diamond, com quality gates por camada e uma task de falha que dispara se qualquer etapa quebrar.",
+          "<b>Terraform no GCP:</b> um bucket por camada com retenção, Secret Manager, Artifact Registry e service accounts com Workload Identity Federation, sem chave guardada no repositório.",
+          "<b>GitHub Actions:</b> CI com ruff, 29 testes (incluindo SCD2 no DuckDB), build da imagem e pipeline ponta a ponta em amostra; CD com <code>terraform apply</code>, push da imagem e gate de 80% do RAG."
+        ] }
+      ]
+    },
+
+    {
       id: "raiz-rag", cat: "agentes-py-js", title: "RAIZ · RAG e Agente de IA contra as causas do crime no Rio",
       live: true,
       subtitle: "Inteligência territorial com dados reais do ISP-RJ, RAG híbrido e agente com LLM",
