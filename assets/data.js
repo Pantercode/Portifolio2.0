@@ -23,7 +23,7 @@ window.PORTFOLIO = {
     skillGroups: [
       { h: "BI e Visualização", items: ["Power BI", "DAX", "Power Query", "Excel", "Google Sheets", "Looker Studio", "Metabase", "GoodData", "Apache Superset", "MicroStrategy", "GA4"] },
       { h: "Linguagens e Python", items: ["SQL", "Python", "Pandas", "NumPy", "Polars", "PySpark", "Scikit-learn", "Matplotlib", "Seaborn", "Plotly", "Plotly Dash", "Streamlit", "FastAPI", "Jupyter"] },
-      { h: "Engenharia de Dados e Orquestração", items: ["ETL / ELT", "Apache Airflow", "Prefect", "Dagster", "Apache Spark", "Databricks", "Kafka", "Airbyte", "Fivetran", "Data Factory", "Docker", "Git", "GitHub Actions", "CI/CD", "Terraform"] },
+      { h: "Engenharia de Dados e Orquestração", items: ["ETL / ELT", "Apache Airflow", "Prefect", "Dagster", "Apache Spark", "Apache Beam", "Databricks", "Kafka", "Airbyte", "Fivetran", "Data Factory", "Docker", "Git", "GitHub Actions", "CI/CD", "Terraform"] },
       { h: "Analytics Engineering", items: ["dbt", "Modelagem Dimensional (Kimball)", "Star Schema", "SCD Tipo 2", "Arquitetura Medalhão", "Semantic Layer", "Data Quality", "Great Expectations", "Write-Audit-Publish", "Data Contracts"] },
       { h: "Bancos e Data Warehouses", items: ["BigQuery", "Snowflake", "AWS Redshift", "DuckDB", "PostgreSQL", "MySQL", "SQL Server", "Oracle", "MongoDB", "Supabase", "Presto / Trino", "Delta Lake", "Parquet"] },
       { h: "Cloud", items: ["Google Cloud", "Cloud Storage", "AWS S3", "AWS Glue", "AWS Lambda", "Microsoft Azure", "Microsoft Fabric", "Render", "Vercel"] },
@@ -92,7 +92,6 @@ window.PORTFOLIO = {
     { id: "python", label: "Python", icon: "code" },
     { id: "sql", label: "SQL", icon: "db" },
     { id: "appscript", label: "Agentes de IA · Apps Script", icon: "spark" },
-    { id: "etl-ia", label: "ETL ao Dash com IA", icon: "flow" },
     { id: "langchain", label: "LangChain · JS · Gemini", icon: "spark" },
     { id: "dbt", label: "dbt Core", icon: "layers" },
     { id: "looker", label: "Looker Studio", icon: "chart" },
@@ -504,7 +503,7 @@ window.PORTFOLIO = {
 
     /* ===================== ETL AO DASH COM IA ===================== */
     {
-      id: "censo-escolar", cat: "etl-ia", title: "Censo Escolar · ETL + Dashboard com IA generativa",
+      id: "censo-escolar", cat: "python", title: "Censo Escolar · ETL + Dashboard com IA generativa",
       live: true,
       summary: "<b>Idade · Escolaridade · Localidade</b> dos alunos matriculados no Brasil, do dado bruto do INEP a um painel público e gratuito. Pipeline de dados completo sobre o <b>Censo Escolar da Educação Básica (INEP)</b>, com PySpark, dbt e Supabase (PostgreSQL), terminando num <b>dashboard público e gratuito</b>, que pode ser incorporado via <code>&lt;iframe&gt;</code>, com um chat de <b>IA generativa</b> (Google Gemini) para perguntar sobre os dados em português. 🌐 <a href=\"https://censo-escolar-dashboard.onrender.com/\" target=\"_blank\" rel=\"noopener\">Acessar a aplicação web</a>",
       stack: ["PySpark", "dbt", "Supabase (PostgreSQL)", "Plotly Dash", "Google Gemini", "Docker", "Render"],

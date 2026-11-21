@@ -70,7 +70,7 @@ A IA responde usando `assets/data.js` (projetos, trajetória, certificações) *
 Tudo fica em `assets/data.js`. A IA lê esse mesmo arquivo, então qualquer projeto novo
 já passa a ser conhecido por ela no próximo deploy.
 
-Categorias: powerbi, python, sql, appscript, etl-ia, langchain, dbt, looker, metabase.
+Categorias: powerbi, python, sql, appscript, langchain, dbt, looker, metabase.
 Cada projeto aceita: `summary`, `intro`, `sections` (`h`, `p`, `ul`, `ol`, `pre`), `stack`,
 `links` (`primary: true` destaca o botão), `embed` (`powerbi`, `looker` ou `pdf`),
 `code` (arquivo .sql.txt), `images` e `live: true` (selo "No ar").
