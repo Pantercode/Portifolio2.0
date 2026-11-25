@@ -637,6 +637,72 @@ window.PORTFOLIO = {
       ]
     },
 
+    {
+      id: "altivo", cat: "agentes-py-js", title: "Altivo · Agente de IA com RAG para Atendimento e Vendas B2B",
+      live: true,
+      subtitle: "Do primeiro \"preciso alcançar 9 m\" até o vendedor certo ligando de volta, com fila, prazo e acerto medido",
+      summary: "O Altivo é um agente de IA que atende os clientes de uma locadora de plataformas elevatórias. Ele tira dúvidas técnicas, indica a máquina certa para a altura e o local da obra, consulta a frota disponível, simula o orçamento e, quando o cliente quer fechar, passa a conversa para o vendedor certo da região, com fila, prazo de contato e briefing pronto. A equipe comercial ganha um copiloto e um painel, e o gestor acompanha a acurácia do assistente. A empresa é fictícia: catálogo, clientes, vendedores e documentos foram criados para o projeto. 🌐 <a href=\"https://altivo.onrender.com/\" target=\"_blank\" rel=\"noopener\">Acessar a aplicação</a>",
+      stack: ["Python 3.12", "LangGraph", "Google Gemini", "RAG híbrido", "pgvector", "PostgreSQL 16", "dbt", "FastAPI", "SSE", "React 18", "TypeScript", "Vite", "Pydantic", "Langfuse", "Ragas", "pytest", "Docker", "Render", "GitHub Actions"],
+      links: [
+        { label: "Abrir o Altivo", url: "https://altivo.onrender.com/", primary: true },
+        { label: "Repositório no GitHub", url: "https://github.com/Pantercode/Agente_IA_Rag_baixo_Harness/tree/main" }
+      ],
+      intro: ["Locar uma plataforma elevatória exige responder perguntas técnicas antes de qualquer preço: a máquina chega a 9 m? Passa numa porta de 80 cm? Pode rodar a diesel num galpão fechado? O Altivo responde isso na hora, com o cálculo feito por código e a fonte citada, e só chama um vendedor quando o cliente está pronto, levando junto o resumo da conversa. A ideia central é um <b>harness mínimo</b>: o modelo decide qual ferramenta usar, mas preço, especificação, score do lead e roteamento são calculados por funções testadas."],
+      sections: [
+        { h: "O que ele faz", ul: [
+          "<b>Para o cliente:</b> responde sobre altura, alcance, carga, largura, piso, energia e treinamento; recomenda o equipamento com alertas de segurança; consulta a disponibilidade por filial e simula o orçamento com a combinação de tarifas mais barata e o frete; cita a fonte de políticas, normas e FAQ.",
+          "<b>Encaminhamento:</b> qualifica o lead (score de 0 a 100) e passa para o vendedor certo, mostrando a contagem até ele ligar. Se a equipe da região estiver lotada, o cliente vê a posição na fila, que atualiza sozinha.",
+          "<b>Para o vendedor:</b> um copiloto que responde sobre a própria meta, conversão e carteira, e um painel com a fila de atendimentos, o briefing de cada cliente e os botões <i>Assumir</i> e <i>Finalizar</i>. Ao finalizar, o próximo cliente compatível da fila é atribuído automaticamente.",
+          "<b>Para o gestor:</b> ranking da equipe, receita por categoria, ocupação da frota, saúde do agente (cache, latência, falhas) e a acurácia do assistente."
+        ] },
+        { h: "Como o agente funciona", ol: [
+          "<b>Classificação:</b> identifica a intenção e reescreve a pergunta para que ela faça sentido sozinha, sem depender do histórico.",
+          "<b>Cache semântico:</b> perguntas de conhecimento estático que já foram respondidas (similaridade de 0,92 ou mais) voltam do cache, sem chamar o modelo.",
+          "<b>Agente com ferramentas:</b> o Gemini escolhe entre 16 ferramentas, liberadas conforme o papel de quem pergunta (visitante, cliente, vendedor ou gestor), com limite de 5 passos por pergunta.",
+          "<b>Cálculo por código:</b> tarifas, recomendação, score do lead e roteamento ficam em funções puras com testes; o modelo só escolhe e explica.",
+          "<b>Resposta ao vivo:</b> a API envia o progresso de cada etapa por streaming (SSE), e a resposta chega com as fontes e os cartões de produto, comparativo ou orçamento."
+        ] },
+        { h: "RAG", ul: [
+          "<b>Fontes:</b> 9 documentos próprios (políticas, FAQ, normas, logística) e 25 fichas técnicas geradas do catálogo.",
+          "<b>Chunking:</b> por seção, de 300 a 800 tokens com sobreposição, um chunk por pergunta no FAQ e um cabeçalho com o documento e a seção.",
+          "<b>Busca híbrida:</b> vetorial (embeddings do Gemini com índice HNSW no pgvector) e texto completo em português, fundidas por Reciprocal Rank Fusion, com reranker opcional.",
+          "<b>Indexação incremental:</b> só reindexa o que mudou; se o modelo de embedding mudar, reindexa tudo e limpa o cache."
+        ] },
+        { h: "Fila e roteamento para o vendedor", ul: [
+          "Cada vendedor atende alguns clientes ao mesmo tempo; quando ninguém elegível tem vaga, o cliente entra na fila, protegida por lock no Postgres.",
+          "<b>Carteira primeiro:</b> quem já é cliente volta para o próprio vendedor, se ele tiver vaga.",
+          "<b>Elegibilidade:</b> o vendedor precisa cobrir o estado e ter a senioridade do ticket (sênior acima de R$ 30 mil, <i>key account</i> acima de R$ 120 mil).",
+          "<b>Pontuação:</b> especialidade, segmento, conversão em 90 dias e capacidade livre. Cada decisão fica registrada com os candidatos e as notas."
+        ] },
+        { h: "Segurança", ul: [
+          "A identidade do cliente e do vendedor vem do token da sessão; nenhuma ferramenta aceita esses dados como argumento.",
+          "O usuário do banco usado pelo agente só lê as tabelas finais do dbt e só escreve na própria área; os dados brutos ficam fora do alcance dele.",
+          "Sessão assinada, limite de perguntas por minuto e testes para token adulterado, permissões por papel e tentativa de mudar as instruções do agente."
+        ] },
+        { h: "Acurácia medida", ul: [
+          "<b>279 perguntas com gabarito</b>, a maioria calculada direto da ficha técnica (por exemplo, quantas pessoas cabem na plataforma de um modelo).",
+          "Quatro suítes de avaliação: intenção, busca (acerto entre os 5 primeiros e posição média), ponta a ponta (ferramenta certa e fato certo na resposta) e Ragas, com o Gemini como juiz.",
+          "Os resultados aparecem no próprio painel do gestor, ao lado dos números de produção: conversão dos clientes encaminhados, prazo de primeiro contato cumprido e avaliações positivas."
+        ] },
+        { h: "Componentes Principais", ul: [
+          "<b>LangGraph:</b> grafo do agente com classificação, cache, ferramentas, resposta e memória.",
+          "<b>Google Gemini:</b> modelo do agente, modelo leve para classificação e briefing, e embeddings.",
+          "<b>PostgreSQL 16 + pgvector:</b> dados do negócio, base de conhecimento com busca vetorial e de texto, memória, cache, leads e fila.",
+          "<b>dbt:</b> transforma os dados em tabelas prontas para o copiloto e os painéis, com testes de qualidade.",
+          "<b>FastAPI:</b> chat com streaming, painéis, fila, autenticação de demonstração e limite de uso.",
+          "<b>React + TypeScript:</b> chat com régua de altura, cartões de produto, comparativo, orçamento e painel comercial, também no celular.",
+          "<b>Langfuse e logs estruturados:</b> rastreio de cada etapa do agente, tokens e feedback dos usuários.",
+          "<b>Docker + Render:</b> uma única imagem com front e API; ao subir, roda as migrations, gera os dados, executa o dbt e indexa a base."
+        ] }
+      ],
+      images: [
+        { src: "img/altivo-1.jpg", cap: "Recomendação: a régua mostra quais máquinas alcançam a altura pedida" },
+        { src: "img/altivo-2.jpg", cap: "Encaminhamento: o vendedor da região é escolhido e a contagem mostra quando ele liga" },
+        { src: "img/altivo-3.jpg", cap: "Painel do vendedor: meta, receita, frota, fila de atendimentos e equipe" },
+        { src: "img/altivo-4.jpg", cap: "Acurácia e assertividade: avaliação offline ao lado dos números de produção" }
+      ]
+    },
+
     /* ===================== APPS SCRIPT ===================== */
     {
       id: "nba", cat: "appscript", title: "LLM Agentes NBA",

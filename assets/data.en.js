@@ -565,6 +565,67 @@ window.PORTFOLIO_EN = {
       ]
     },
 
+    "altivo": {
+      title: "Altivo · RAG AI Agent for B2B Customer Service and Sales",
+      subtitle: "From the first \"I need to reach 9 m\" to the right salesperson calling back, with a queue, deadlines and measured accuracy",
+      summary: "Altivo is an AI agent that serves the customers of an aerial work platform rental company. It answers technical questions, recommends the right machine for the job's height and site, checks available fleet, simulates the quote and, when the customer is ready to close, hands the conversation to the right salesperson in the region, with a queue, a contact deadline and a ready-made briefing. The sales team gets a copilot and a dashboard, and the manager tracks the assistant's accuracy. The company is fictitious: catalog, customers, salespeople and documents were created for the project. 🌐 <a href=\"https://altivo.onrender.com/\" target=\"_blank\" rel=\"noopener\">Open the app</a>",
+      links: ["Open Altivo", "GitHub repository"],
+      intro: ["Renting an aerial work platform requires answering technical questions before any price: does the machine reach 9 m? Does it fit through an 80 cm door? Can it run on diesel in a closed warehouse? Altivo answers these on the spot, with the calculation done in code and the source cited, and only calls a salesperson when the customer is ready, passing along a summary of the conversation. The core idea is a <b>minimal harness</b>: the model decides which tool to use, but price, specs, lead score and routing are calculated by tested functions."],
+      sections: [
+        { h: "What it does", ul: [
+          "<b>For the customer:</b> answers questions about height, reach, load, width, floor, power source and training; recommends equipment with safety alerts; checks availability by branch and simulates the quote with the cheapest rate combination plus freight; cites the source for policies, standards and FAQ.",
+          "<b>Handoff:</b> qualifies the lead (score from 0 to 100) and passes it to the right salesperson, showing a countdown until they call. If the regional team is full, the customer sees their position in the queue, which updates on its own.",
+          "<b>For the salesperson:</b> a copilot that answers questions about their own target, conversion and accounts, and a dashboard with the service queue, each customer's briefing and the <i>Take</i> and <i>Close</i> buttons. When they close one, the next compatible customer in the queue is assigned automatically.",
+          "<b>For the manager:</b> team ranking, revenue by category, fleet utilization, agent health (cache, latency, failures) and the assistant's accuracy."
+        ] },
+        { h: "How the agent works", ol: [
+          "<b>Classification:</b> identifies the intent and rewrites the question so it stands on its own, without depending on the history.",
+          "<b>Semantic cache:</b> static-knowledge questions that were already answered (similarity of 0.92 or more) come back from the cache without calling the model.",
+          "<b>Agent with tools:</b> Gemini chooses among 16 tools, enabled according to the role of whoever is asking (visitor, customer, salesperson or manager), with a limit of 5 steps per question.",
+          "<b>Calculation in code:</b> rates, recommendation, lead score and routing live in pure, tested functions; the model only chooses and explains.",
+          "<b>Live answers:</b> the API streams the progress of each step (SSE), and the answer arrives with its sources and product, comparison or quote cards."
+        ] },
+        { h: "RAG", ul: [
+          "<b>Sources:</b> 9 in-house documents (policies, FAQ, standards, logistics) and 25 technical sheets generated from the catalog.",
+          "<b>Chunking:</b> by section, 300 to 800 tokens with overlap, one chunk per question in the FAQ and a header with the document and section.",
+          "<b>Hybrid search:</b> vector search (Gemini embeddings with an HNSW index in pgvector) and Portuguese full-text search, fused with Reciprocal Rank Fusion, with an optional reranker.",
+          "<b>Incremental indexing:</b> only reindexes what changed; if the embedding model changes, it reindexes everything and clears the cache."
+        ] },
+        { h: "Queue and routing to salespeople", ul: [
+          "Each salesperson serves a few customers at a time; when no eligible salesperson has room, the customer joins the queue, protected by a lock in Postgres.",
+          "<b>Accounts first:</b> existing customers go back to their own salesperson, if they have room.",
+          "<b>Eligibility:</b> the salesperson must cover the state and have the seniority for the deal size (senior above R$ 30k, <i>key account</i> above R$ 120k).",
+          "<b>Scoring:</b> specialty, segment, 90-day conversion and free capacity. Every decision is logged with the candidates and their scores."
+        ] },
+        { h: "Security", ul: [
+          "Customer and salesperson identity comes from the session token; no tool accepts these as arguments.",
+          "The database user the agent runs as only reads dbt's final tables and only writes to its own area; raw data is out of its reach.",
+          "Signed sessions, a per-minute question limit and tests for tampered tokens, role permissions and attempts to change the agent's instructions."
+        ] },
+        { h: "Measured accuracy", ul: [
+          "<b>279 questions with an answer key</b>, most calculated directly from the technical sheets (for example, how many people fit on a model's platform).",
+          "Four evaluation suites: intent, retrieval (hit in the top 5 and mean rank), end to end (right tool and right fact in the answer) and Ragas, with Gemini as the judge.",
+          "Results appear on the manager's dashboard itself, next to production numbers: conversion of handed-off customers, first-contact deadline met and positive ratings."
+        ] },
+        { h: "Main Components", ul: [
+          "<b>LangGraph:</b> the agent graph with classification, cache, tools, answer and memory.",
+          "<b>Google Gemini:</b> the agent model, a lightweight model for classification and briefings, and embeddings.",
+          "<b>PostgreSQL 16 + pgvector:</b> business data, knowledge base with vector and text search, memory, cache, leads and queue.",
+          "<b>dbt:</b> turns the data into ready-made tables for the copilot and dashboards, with quality tests.",
+          "<b>FastAPI:</b> streaming chat, dashboards, queue, demo authentication and rate limiting.",
+          "<b>React + TypeScript:</b> chat with a height gauge, product cards, comparisons, quotes and the sales dashboard, on mobile too.",
+          "<b>Langfuse and structured logs:</b> tracing of each agent step, tokens and user feedback.",
+          "<b>Docker + Render:</b> a single image with front end and API; on startup it runs migrations, generates the data, runs dbt and indexes the knowledge base."
+        ] }
+      ],
+      images: [
+        "Recommendation: the gauge shows which machines reach the requested height",
+        "Handoff: the regional salesperson is chosen and a countdown shows when they'll call",
+        "Salesperson dashboard: target, revenue, fleet, service queue and team",
+        "Accuracy and precision: offline evaluation next to production numbers"
+      ]
+    },
+
     /* ===================== APPS SCRIPT ===================== */
     "nba": {
       title: "NBA LLM Agents",
