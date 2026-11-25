@@ -47,6 +47,10 @@ h1,h2,h3{font-family:var(--display);letter-spacing:-.02em;margin:0}
   border-radius:999px;padding:8px 10px 8px 14px;font:inherit;font-size:13px;cursor:pointer;min-width:220px}
 .search-pill svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
 .search-pill span{flex:1;text-align:left}
+.lang-toggle{display:flex;align-items:center;gap:2px;border:1px solid var(--line2);background:rgba(8,26,10,.6);border-radius:999px;padding:3px;font:600 12px var(--mono);cursor:pointer;flex-shrink:0}
+.lang-toggle span{padding:5px 9px;border-radius:999px;color:var(--muted);transition:.2s}
+.lang-toggle span.on{background:var(--teal);color:#021004}
+.lang-toggle:hover span:not(.on){color:var(--text)}
 kbd{font:11px var(--mono);border:1px solid var(--line2);border-radius:6px;padding:2px 6px;color:var(--dim)}
 
 /* ---------- buttons/chips ---------- */

@@ -1,29 +1,30 @@
 /* ===================== Marcell.AI · assistente embutido ===================== */
 (() => {
   const D = window.PORTFOLIO, AI = D.ai;
+  const L = window.L || (pt => pt);
   const $ = (s, r = document) => r.querySelector(s);
   const esc = (s = "") => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const history = [];
   let busy = false;
 
   /* ---------- markup ---------- */
-  const launcher = document.body.appendChild(Object.assign(document.createElement("button"), { className: "ai-launch", type: "button", ariaLabel: "Abrir assistente de IA" }));
-  launcher.innerHTML = `<span class="ai-core"></span><span class="ai-txt"><b>Pergunte à IA</b><small>sobre o Marcell</small></span>`;
+  const launcher = document.body.appendChild(Object.assign(document.createElement("button"), { className: "ai-launch", type: "button", ariaLabel: L("Abrir assistente de IA", "Open AI assistant") }));
+  launcher.innerHTML = `<span class="ai-core"></span><span class="ai-txt"><b>${L("Pergunte à IA", "Ask the AI")}</b><small>${L("sobre o Marcell", "about Marcell")}</small></span>`;
 
-  const panel = document.body.appendChild(Object.assign(document.createElement("div"), { className: "ai-panel", role: "dialog", ariaLabel: "Assistente de IA" }));
+  const panel = document.body.appendChild(Object.assign(document.createElement("div"), { className: "ai-panel", role: "dialog", ariaLabel: L("Assistente de IA", "AI assistant") }));
   panel.innerHTML = `
     <header class="ai-head">
       <span class="ai-avatar"><span class="ai-core"></span></span>
       <div><b>${esc(AI.name)}</b><small><i></i> online · Gemini</small></div>
-      <button class="ai-x" type="button" aria-label="Fechar">×</button>
+      <button class="ai-x" type="button" aria-label="${L("Fechar", "Close")}">×</button>
     </header>
     <div class="ai-log" id="aiLog" aria-live="polite"></div>
     <div class="ai-sugs" id="aiSugs">${AI.suggestions.map(s => `<button type="button">${esc(s)}</button>`).join("")}</div>
     <form class="ai-form" id="aiForm">
-      <input id="aiIn" maxlength="800" autocomplete="off" placeholder="Pergunte algo sobre os projetos…" />
-      <button type="submit" aria-label="Enviar"><svg viewBox="0 0 24 24"><path d="M4 12 20 4l-6 16-3-7z"/></svg></button>
+      <input id="aiIn" maxlength="800" autocomplete="off" placeholder="${L("Pergunte algo sobre os projetos…", "Ask something about the projects…")}" />
+      <button type="submit" aria-label="${L("Enviar", "Send")}"><svg viewBox="0 0 24 24"><path d="M4 12 20 4l-6 16-3-7z"/></svg></button>
     </form>
-    <p class="ai-note">Respostas geradas por IA a partir do conteúdo deste portfólio.</p>`;
+    <p class="ai-note">${L("Respostas geradas por IA a partir do conteúdo deste portfólio.", "AI-generated answers based on this portfolio's content.")}</p>`;
   const log = $("#aiLog", panel), input = $("#aiIn", panel);
 
   /* ---------- render ---------- */
@@ -63,17 +64,17 @@
   /* ---------- modo demonstração (quando não há /api/chat, ex.: prévia local) ---------- */
   function localAnswer(q) {
     const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-    const stop = new Set("que quais qual de do da dos das um uma o a os as e em com para por me mostra sobre ele dele tem usa usam projeto projetos marcell".split(" "));
+    const stop = new Set("que quais qual de do da dos das um uma o a os as e em com para por me mostra sobre ele dele tem usa usam projeto projetos marcell what which the of an and in with for by show me about he his has use uses project projects".split(" "));
     const terms = norm(q).split(/[^a-z0-9.+#]+/).filter(t => t.length > 1 && !stop.has(t));
-    if (/trajet|carreira|experien|empresa|trabalh/.test(norm(q)))
-      return "Resumo da trajetória do Marcell:\n" + D.career.slice(0, 5).map(c => `- **${c.role}** · ${c.company} (${c.period})`).join("\n") + "\n\nVeja mais na seção Trajetória.";
+    if (/trajet|carreira|experien|empresa|trabalh|career|compan|work/.test(norm(q)))
+      return L("Resumo da trajetória do Marcell:\n", "Summary of Marcell's career:\n") + D.career.slice(0, 5).map(c => `- **${c.role}** · ${c.company} (${c.period})`).join("\n") + L("\n\nVeja mais na seção Trajetória.", "\n\nSee more in the Career section.");
     const scored = D.projects.map(p => {
       const hay = norm([p.title, p.summary, (p.stack || []).join(" "), p.cat].join(" "));
-      return { p, s: terms.reduce((a, t) => a + (hay.includes(t) ? 1 : 0), 0) + (/\bia\b|gemini|generativ|agente/.test(norm(q)) && p.live ? 2 : 0) };
+      return { p, s: terms.reduce((a, t) => a + (hay.includes(t) ? 1 : 0), 0) + (/\bia\b|\bai\b|gemini|generativ|agent/.test(norm(q)) && p.live ? 2 : 0) };
     }).filter(x => x.s > 0).sort((a, b) => b.s - a.s).slice(0, 4);
-    if (!scored.length) return "Não encontrei um projeto sobre isso. Tente perguntar por uma tecnologia (Power BI, dbt, PySpark, Gemini, SQL) ou por um tema.";
-    return "Encontrei estes projetos:\n" + scored.map(({ p }) => `- [${p.title}](#projeto-${p.id}) · ${(p.stack || []).slice(0, 3).join(", ")}`).join("\n") +
-      "\n\n(Modo demonstração: com o site publicado na Vercel, a IA responde em linguagem natural.)";
+    if (!scored.length) return L("Não encontrei um projeto sobre isso. Tente perguntar por uma tecnologia (Power BI, dbt, PySpark, Gemini, SQL) ou por um tema.", "I couldn't find a project about that. Try asking about a technology (Power BI, dbt, PySpark, Gemini, SQL) or a topic.");
+    return L("Encontrei estes projetos:\n", "I found these projects:\n") + scored.map(({ p }) => `- [${p.title}](#projeto-${p.id}) · ${(p.stack || []).slice(0, 3).join(", ")}`).join("\n") +
+      L("\n\n(Modo demonstração: com o site publicado na Vercel, a IA responde em linguagem natural.)", "\n\n(Demo mode: on the site published on Vercel, the AI answers in natural language.)");
   }
 
   async function ask(q) {
@@ -84,7 +85,7 @@
     let reply, ok = false;
     try {
       const ctrl = new AbortController(); const to = setTimeout(() => ctrl.abort(), 25000);
-      const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: q, history }), signal: ctrl.signal });
+      const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message: q, history, lang: window.LANG || "pt" }), signal: ctrl.signal });
       clearTimeout(to);
       const j = await r.json().catch(() => null);
       if (r.ok && j && j.reply) { reply = j.reply; ok = true; }

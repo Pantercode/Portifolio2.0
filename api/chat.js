@@ -52,11 +52,11 @@ ${linkedin}`;
   return CONTEXT;
 }
 
-const SYSTEM = (ctx) => `Você é o Marcell.AI, assistente do portfólio de dados de Marcell Felipe, exibido no site pessoal dele.
+const SYSTEM = (ctx, lang) => `Você é o Marcell.AI, assistente do portfólio de dados de Marcell Felipe, exibido no site pessoal dele.
 Público: recrutadores, gestores e pessoas da área de dados.
 
 Regras:
-- Responda no idioma da pergunta (padrão: português do Brasil), em tom profissional, confiante e direto.
+- Responda no idioma da pergunta (padrão: ${lang === "en" ? "inglês, pois o visitante está vendo o site em inglês" : "português do Brasil"}), em tom profissional, confiante e direto.
 - Use SOMENTE as informações do CONTEXTO abaixo. Se algo não estiver lá (salário, telefone, opiniões, assuntos fora do portfólio), diga que não tem essa informação e sugira falar com o Marcell pelo LinkedIn.
 - Nunca invente números, empresas, datas ou resultados.
 - Para carreira, formação, idiomas e certificações, a fonte principal é a seção "PERFIL COMPLETO DO LINKEDIN".
@@ -94,8 +94,9 @@ export default async function handler(req, res) {
   if (list.length >= LIMIT) return res.status(429).json({ error: "Muitas perguntas em pouco tempo. Tente de novo em alguns minutos." });
   list.push(now); hits.set(ip, list);
 
-  let { message, history } = req.body || {};
-  if (typeof req.body === "string") { try { ({ message, history } = JSON.parse(req.body)); } catch { } }
+  let { message, history, lang } = req.body || {};
+  if (typeof req.body === "string") { try { ({ message, history, lang } = JSON.parse(req.body)); } catch { } }
+  lang = lang === "en" ? "en" : "pt";
   message = String(message || "").trim().slice(0, MAX_MSG);
   if (!message) return res.status(400).json({ error: "Mensagem vazia." });
 
@@ -104,7 +105,7 @@ export default async function handler(req, res) {
     .map(t => ({ role: t.role, parts: [{ text: t.text.slice(0, MAX_MSG * 2) }] }));
 
   const body = {
-    systemInstruction: { parts: [{ text: SYSTEM(buildContext()) }] },
+    systemInstruction: { parts: [{ text: SYSTEM(buildContext(), lang) }] },
     contents: [...turns, { role: "user", parts: [{ text: message }] }],
     generationConfig: { temperature: 0.4, maxOutputTokens: 700 }
   };

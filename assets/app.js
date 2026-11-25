@@ -1,5 +1,6 @@
 (() => {
   const D = window.PORTFOLIO;
+  const L = window.L || (pt => pt);
   const P = D.projects;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -64,10 +65,10 @@
     if (kind === "course") return `<span class="course-ini">${esc((extra || alt).slice(0, 2).toUpperCase())}</span>`;
     if (kind === "photo") return `<div class="ph"><span>${esc(alt)}</span></div>`;
     const low = alt.toLowerCase();
-    const body = /diagrama|processo|estrutural/.test(low)
+    const body = /diagrama|processo|estrutural|diagram|structural/.test(low)
       ? `<div class="gm-flow"><span>CSV</span><i></i><span>PySpark</span><i></i><span>Parquet</span><i></i><span>BigQuery</span><i></i><span>Power BI</span></div>`
       : `<div class="gm-table">${Array.from({ length: 6 }, (_, r) => `<div class="${r ? "" : "h"}">${Array.from({ length: 4 }, () => "<i></i>").join("")}</div>`).join("")}</div>`;
-    return `<div class="gallery-mock"><div class="gm-bar"><i></i><i></i><i></i><span>${/bigquery/.test(low) ? "BigQuery" : /bucket|storage/.test(low) ? "Cloud Storage" : /diagrama|processo/.test(low) ? "Arquitetura" : "Resultado da query"}</span></div>${body}</div>`;
+    return `<div class="gallery-mock"><div class="gm-bar"><i></i><i></i><i></i><span>${/bigquery/.test(low) ? "BigQuery" : /bucket|storage/.test(low) ? "Cloud Storage" : /diagrama|processo|diagram/.test(low) ? L("Arquitetura", "Architecture") : L("Resultado da query", "Query result")}</span></div>${body}</div>`;
   }
   window.__imgFail = (img) => {
     const kind = img.dataset.kind || "gallery";
@@ -103,15 +104,15 @@
   const liveCount = P.filter(p => p.live).length;
 
   $(".orb").style.background = `url(${D.person.photo}) center/cover, #041106`;
-  $("#heroLead").textContent = `${D.person.role} · ${D.person.tagline}. ${P.length} projetos reais, de dashboards executivos a pipelines em camadas e apps com agentes de IA.`;
-  $("#hubSub").innerHTML = `<span class="tag tag-cat">${P.length} projetos</span><span class="tag tag-live">${liveCount} no ar</span>`;
+  $("#heroLead").textContent = `${D.person.role} · ${D.person.tagline}. ${L(`${P.length} projetos reais, de dashboards executivos a pipelines em camadas e apps com agentes de IA.`, `${P.length} real projects, from executive dashboards to layered pipelines and apps with AI agents.`)}`;
+  $("#hubSub").innerHTML = `<span class="tag tag-cat">${P.length} ${L("projetos", "projects")}</span><span class="tag tag-live">${liveCount} ${L("no ar", "live")}</span>`;
 
   const kpis = [
-    { n: dashCount, l: "Dashboards publicados", ic: "chart", go: () => selectCat("powerbi") },
-    { n: P.length, l: "Projetos no portfólio", ic: "grid", hot: true, go: () => selectCat("all") },
-    { n: liveCount, l: "Agentes IA · Python · JavaScript", ic: "spark", go: () => selectCat("live") },
-    { n: D.categories.filter(c => !c.hidden).length, l: "Áreas de atuação", ic: "layers", go: () => selectCat("all") },
-    { n: techs.size, l: "Tecnologias aplicadas", ic: "code", go: () => location.hash = "sobre" }
+    { n: dashCount, l: L("Dashboards publicados", "Published dashboards"), ic: "chart", go: () => selectCat("powerbi") },
+    { n: P.length, l: L("Projetos no portfólio", "Projects in the portfolio"), ic: "grid", hot: true, go: () => selectCat("all") },
+    { n: liveCount, l: L("Agentes IA · Python · JavaScript", "AI Agents · Python · JavaScript"), ic: "spark", go: () => selectCat("live") },
+    { n: D.categories.filter(c => !c.hidden).length, l: L("Áreas de atuação", "Areas of expertise"), ic: "layers", go: () => selectCat("all") },
+    { n: techs.size, l: L("Tecnologias aplicadas", "Technologies applied"), ic: "code", go: () => location.hash = "sobre" }
   ];
   $("#boardKpis").innerHTML = kpis.map((k, i) => `<div class="kpi ${k.hot ? "hot" : ""}" data-k="${i}"><span class="ico">${ICONS[k.ic]}</span><div><b>${k.n}</b><small>${k.l}</small></div></div>`).join("");
   $$("#boardKpis .kpi").forEach(el => el.addEventListener("click", () => { const go = () => { kpis[+el.dataset.k].go(); document.getElementById("projetos").scrollIntoView({ behavior: window.tvPage ? "instant" : "smooth" }); }; window.tvPage ? window.tvPage(go) : go(); }));
@@ -152,11 +153,11 @@
     mini.innerHTML = `
       <div style="display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)">${ICONS[catById[p.cat].icon].replace("<svg", '<svg width="14" height="14" style="stroke:var(--teal);fill:none;stroke-width:2"')}${esc(catById[p.cat].label)}</div>
       <div style="font:600 16px/1.2 var(--display);margin:8px 0">${esc(p.title)}</div>
-      ${p.live ? '<span class="tag tag-live">No ar</span>' : '<span class="tag tag-cat">Projeto</span>'}
+      ${p.live ? `<span class="tag tag-live">${L("No ar", "Live")}</span>` : `<span class="tag tag-cat">${L("Projeto", "Project")}</span>`}
       <div class="spark">${bars}</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:11px;color:var(--muted)">
-        <div><b style="font:700 18px var(--display);color:var(--text);display:block">${(p.sections || []).length}</b>seções</div>
-        <div><b style="font:700 18px var(--display);color:var(--text);display:block">${(p.stack || []).length}</b>tecnologias</div>
+        <div><b style="font:700 18px var(--display);color:var(--text);display:block">${(p.sections || []).length}</b>${L("seções", "sections")}</div>
+        <div><b style="font:700 18px var(--display);color:var(--text);display:block">${(p.stack || []).length}</b>${L("tecnologias", "technologies")}</div>
         <div><b style="font:700 18px var(--display);color:var(--text);display:block">${linksCount(p)}</b>links</div>
       </div>`;
   }
@@ -175,7 +176,7 @@
   let state = { cat: "all", q: "", sel: null };
   const catsEl = $("#cats");
   function renderCats() {
-    const items = [{ id: "all", label: "Todos os projetos", n: P.length }, { id: "live", label: "Agentes IA · Python · JavaScript", n: liveCount },
+    const items = [{ id: "all", label: L("Todos os projetos", "All projects"), n: P.length }, { id: "live", label: L("Agentes IA · Python · JavaScript", "AI Agents · Python · JavaScript"), n: liveCount },
       ...D.categories.filter(c => !c.hidden).map(c => ({ id: c.id, label: c.label, n: P.filter(p => p.cat === c.id).length }))];
     catsEl.innerHTML = items.map(c => `<button class="cat ${state.cat === c.id && !state.q ? "active" : ""}" data-cat="${c.id}" type="button"><span class="n">${c.n}</span><span class="l">${esc(c.label)}${c.sub ? `<small class="cat-sub">${esc(c.sub)}</small>` : ""}</span></button>`).join("");
     $$(".cat", catsEl).forEach(b => b.addEventListener("click", () => selectCat(b.dataset.cat)));
@@ -195,16 +196,16 @@
   }
   function renderList() {
     const list = filtered();
-    $("#plistTitle").textContent = state.q ? `Resultados para “${state.q}”` : state.cat === "all" ? "Todos os projetos" : state.cat === "live" ? "Agentes IA · Python · JavaScript" : catById[state.cat].label;
-    $("#plistCount").textContent = `${list.length} ${list.length === 1 ? "projeto" : "projetos"}`;
-    if (!list.length) { $("#plist").innerHTML = `<li class="muted" style="padding:20px">Nenhum projeto encontrado. Tente “Python”, “Power BI” ou “Gemini”.</li>`; return; }
+    $("#plistTitle").textContent = state.q ? L(`Resultados para “${state.q}”`, `Results for “${state.q}”`) : state.cat === "all" ? L("Todos os projetos", "All projects") : state.cat === "live" ? L("Agentes IA · Python · JavaScript", "AI Agents · Python · JavaScript") : catById[state.cat].label;
+    $("#plistCount").textContent = `${list.length} ${list.length === 1 ? L("projeto", "project") : L("projetos", "projects")}`;
+    if (!list.length) { $("#plist").innerHTML = `<li class="muted" style="padding:20px">${L("Nenhum projeto encontrado. Tente “Python”, “Power BI” ou “Gemini”.", "No projects found. Try “Python”, “Power BI” or “Gemini”.")}</li>`; return; }
     if (!state.sel || !list.some(p => p.id === state.sel)) state.sel = list[0].id;
     $("#plist").innerHTML = list.map((p, i) => {
       const t = list.length > 1 ? i / (list.length - 1) : .5;
       const indent = Math.round((1 - Math.sin(Math.PI * t)) * 14);
       return `<li class="pitem ${p.id === state.sel ? "active" : ""}" data-id="${p.id}" style="--indent:${indent}px" tabindex="0">
         <span class="t">${esc(p.title)}</span>
-        <span class="row"><span class="tag tag-cat">${esc(catById[p.cat].label)}</span>${p.live ? '<span class="tag tag-live">No ar</span>' : ""}${(p.stack || []).filter(s => s !== catById[p.cat].label).slice(0, 2).map(s => `<span class="chip">${esc(s)}</span>`).join("")}</span>
+        <span class="row"><span class="tag tag-cat">${esc(catById[p.cat].label)}</span>${p.live ? `<span class="tag tag-live">${L("No ar", "Live")}</span>` : ""}${(p.stack || []).filter(s => s !== catById[p.cat].label).slice(0, 2).map(s => `<span class="chip">${esc(s)}</span>`).join("")}</span>
       </li>`;
     }).join("");
     $$(".pitem").forEach(li => {
@@ -228,17 +229,17 @@
       <div class="cat-line">${ICONS[catById[p.cat].icon].replace("<svg", '<svg width="16" height="16" style="stroke:var(--teal);fill:none;stroke-width:2"')}<span>${esc(catById[p.cat].label)}</span></div>
       <h3>${esc(p.title)}</h3>
       ${p.subtitle ? `<div class="sub">${esc(p.subtitle)}</div>` : ""}
-      ${p.live ? '<span class="tag tag-live">Publicado · no ar</span>' : `<span class="tag tag-cat">${p.embed ? (p.embed.type === "pdf" ? "Relatório PDF" : "Dashboard interativo") : "Projeto"}</span>`}
+      ${p.live ? `<span class="tag tag-live">${L("Publicado · no ar", "Published · live")}</span>` : `<span class="tag tag-cat">${p.embed ? (p.embed.type === "pdf" ? L("Relatório PDF", "PDF report") : L("Dashboard interativo", "Interactive dashboard")) : L("Projeto", "Project")}</span>`}
       <div class="spark" aria-hidden="true">${bars}</div>
       <p class="sum">${esc(sum.length > 380 ? sum.slice(0, 378) + "…" : sum)}</p>
       <div class="mbox-row">
-        <div class="mbox"><b>${(p.sections || []).length + (p.intro ? 1 : 0)}</b><small>Seções da análise</small></div>
-        <div class="mbox"><b>${(p.stack || []).length}</b><small>Tecnologias</small></div>
-        <div class="mbox"><b>${linksCount(p)}</b><small>Links e painéis</small></div>
+        <div class="mbox"><b>${(p.sections || []).length + (p.intro ? 1 : 0)}</b><small>${L("Seções da análise", "Analysis sections")}</small></div>
+        <div class="mbox"><b>${(p.stack || []).length}</b><small>${L("Tecnologias", "Technologies")}</small></div>
+        <div class="mbox"><b>${linksCount(p)}</b><small>${L("Links e painéis", "Links and dashboards")}</small></div>
       </div>
       <div class="chips">${(p.stack || []).map(s => `<span class="chip">${esc(s)}</span>`).join("")}</div>
       <div class="acts">
-        <button class="btn btn-gold btn-sm" type="button" data-open="${p.id}">Ver projeto completo →</button>
+        <button class="btn btn-gold btn-sm" type="button" data-open="${p.id}">${L("Ver projeto completo →", "View full project →")}</button>
         ${primary ? `<a class="btn btn-ghost btn-sm" href="${esc(primary.url)}" target="_blank" rel="noopener">${esc(primary.label)} ↗</a>` : ""}
       </div>`;
     $("[data-open]", $("#preview")).addEventListener("click", () => openProject(p.id));
@@ -270,7 +271,7 @@
   const EMBEDDED_PREVIEW = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
   function embedHTML(e, title) {
     if (!e) return "";
-    const label = { powerbi: "Power BI · painel interativo", looker: "Looker Studio · painel interativo", pdf: "Documento PDF" }[e.type];
+    const label = { powerbi: L("Power BI · painel interativo", "Power BI · interactive dashboard"), looker: L("Looker Studio · painel interativo", "Looker Studio · interactive dashboard"), pdf: L("Documento PDF", "PDF document") }[e.type];
     const open = e.type === "pdf" ? e.url.replace("/preview", "/view") : e.url.replace("/embed/reporting", "/reporting");
     const isPdf = e.type === "pdf";
     const bars = Array.from({ length: 14 }, (_, i) => 25 + (hash(title + i) % 70)).map(v => `<i style="height:${v}%"></i>`).join("");
@@ -284,11 +285,11 @@
           <b>${esc(title)}</b>
           <small>${label}</small>
           ${EMBEDDED_PREVIEW
-            ? `<a class="btn btn-primary btn-sm" href="${esc(open)}" target="_blank" rel="noopener">Abrir ${isPdf ? "documento" : "painel"} ↗</a><em>Nesta prévia o ${isPdf ? "documento" : "painel"} abre em uma nova aba. No site publicado ele carrega aqui.</em>`
-            : `<button class="btn btn-primary btn-sm" type="button" data-load>▶ Carregar ${isPdf ? "documento" : "painel interativo"}</button>`}
+            ? `<a class="btn btn-primary btn-sm" href="${esc(open)}" target="_blank" rel="noopener">${L(`Abrir ${isPdf ? "documento" : "painel"}`, `Open ${isPdf ? "document" : "dashboard"}`)} ↗</a><em>${L(`Nesta prévia o ${isPdf ? "documento" : "painel"} abre em uma nova aba. No site publicado ele carrega aqui.`, `In this preview the ${isPdf ? "document" : "dashboard"} opens in a new tab. On the published site it loads here.`)}</em>`
+            : `<button class="btn btn-primary btn-sm" type="button" data-load>▶ ${isPdf ? L("Carregar documento", "Load document") : L("Carregar painel interativo", "Load interactive dashboard")}</button>`}
         </div>
       </div>`;
-    return `<div class="embed-wrap"><div class="embed-bar"><span>${label}</span><a class="btn btn-ghost btn-sm" href="${esc(open)}" target="_blank" rel="noopener">Abrir em tela cheia ↗</a></div>
+    return `<div class="embed-wrap"><div class="embed-bar"><span>${label}</span><a class="btn btn-ghost btn-sm" href="${esc(open)}" target="_blank" rel="noopener">${L("Abrir em tela cheia", "Open full screen")} ↗</a></div>
       <div class="embed ${isPdf ? "ratio-pdf" : "ratio-16x9"}" data-src="${esc(e.url)}" data-title="${esc(title)}">${poster}</div></div>`;
   }
   function openProject(id, push = true) {
@@ -299,7 +300,7 @@
     const p = P.find(x => x.id === id); if (!p) return;
     const c = catById[p.cat];
     let h = `<div class="d-head">
-      <div class="cat-line"><span class="tag tag-cat">${esc(c.label)}</span>${p.live ? '<span class="tag tag-live">Publicado · no ar</span>' : ""}</div>
+      <div class="cat-line"><span class="tag tag-cat">${esc(c.label)}</span>${p.live ? `<span class="tag tag-live">${L("Publicado · no ar", "Published · live")}</span>` : ""}</div>
       <h2 id="dTitle">${esc(p.title)}</h2>
       ${p.subtitle ? `<div class="sub">${esc(p.subtitle)}</div>` : ""}
       <p class="sum">${p.summary}</p>
@@ -311,23 +312,23 @@
     (p.sections || []).forEach(s => h += block(s));
     if (p.code) {
       const fname = p.code.src.split("/").pop().replace(".txt", "");
-      h += `<div class="d-block"><h3>Segue a query</h3>
+      h += `<div class="d-block"><h3>${L("Segue a query", "The query")}</h3>
         <div class="macbook" id="codeBox">
           <div class="mb-lid"><div class="mb-screen"><span class="mb-notch"></span>
             <div class="mac-win">
               <div class="mac-bar">
                 <span class="mac-dots"><i class="r"></i><i class="y"></i><i class="g"></i></span>
                 <span class="mac-tabs"><span class="mac-tab on"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg>${esc(fname)}</span><span class="mac-path">${esc(p.code.label)}</span></span>
-                <span class="mac-acts"><button type="button" id="codeCopy">Copiar</button><button type="button" id="codeExp">Expandir</button></span>
+                <span class="mac-acts"><button type="button" id="codeCopy">${L("Copiar", "Copy")}</button><button type="button" id="codeExp">${L("Expandir", "Expand")}</button></span>
               </div>
-              <div class="mac-body"><pre><code>Carregando…</code></pre></div>
+              <div class="mac-body"><pre><code>${L("Carregando…", "Loading…")}</code></pre></div>
               <div class="mac-status"><span>● SQL</span><span id="codeLines"></span><span>UTF-8</span><span>BigQuery Standard SQL</span></div>
             </div>
           </div></div>
           <div class="mb-base"><span class="mb-groove"></span></div>
         </div></div>`;
     }
-    if (p.images && p.images.length) h += `<div class="d-block"><h3>${p.code ? "Exemplo dos dados" : "Imagens do projeto"}</h3><div class="gallery">${p.images.map(im => `<figure data-src="${esc(im.src)}" data-cap="${esc(im.cap)}"><div class="im">${imgHTML(im.src, im.cap, "gallery")}</div><figcaption>${esc(im.cap)}</figcaption></figure>`).join("")}</div></div>`;
+    if (p.images && p.images.length) h += `<div class="d-block"><h3>${p.code ? L("Exemplo dos dados", "Data sample") : L("Imagens do projeto", "Project images")}</h3><div class="gallery">${p.images.map(im => `<figure data-src="${esc(im.src)}" data-cap="${esc(im.cap)}"><div class="im">${imgHTML(im.src, im.cap, "gallery")}</div><figcaption>${esc(im.cap)}</figcaption></figure>`).join("")}</div></div>`;
     $("#drawerBody").innerHTML = h;
     drawer.classList.add("open"); drawer.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
@@ -336,14 +337,14 @@
     if (p.code) {
       fetch(p.code.src).then(r => r.text()).then(t => {
         $("#codeBox pre code").innerHTML = sqlHighlight(t.replace(/\n$/, "")).split("\n").map((l, i) => `<span class="ln">${i + 1}</span>${l || " "}`).join("\n");
-        $("#codeLines").textContent = `${t.trim().split("\n").length} linhas`;
-        $("#codeCopy").onclick = async () => { try { await navigator.clipboard.writeText(t); $("#codeCopy").textContent = "Copiado!"; } catch (e) { $("#codeCopy").textContent = "Selecione e copie"; } };
-      }).catch(() => { $("#codeBox pre code").textContent = "Não foi possível carregar a query."; });
-      $("#codeExp").onclick = () => { const b = $("#codeBox"); b.classList.toggle("expanded"); $("#codeExp").textContent = b.classList.contains("expanded") ? "Recolher" : "Expandir"; };
+        $("#codeLines").textContent = `${t.trim().split("\n").length} ${L("linhas", "lines")}`;
+        $("#codeCopy").onclick = async () => { try { await navigator.clipboard.writeText(t); $("#codeCopy").textContent = L("Copiado!", "Copied!"); } catch (e) { $("#codeCopy").textContent = L("Selecione e copie", "Select and copy"); } };
+      }).catch(() => { $("#codeBox pre code").textContent = L("Não foi possível carregar a query.", "Could not load the query."); });
+      $("#codeExp").onclick = () => { const b = $("#codeBox"); b.classList.toggle("expanded"); $("#codeExp").textContent = b.classList.contains("expanded") ? L("Recolher", "Collapse") : L("Expandir", "Expand"); };
     }
     $$(".embed [data-load]").forEach(b => b.addEventListener("click", () => {
       const box = b.closest(".embed");
-      box.insertAdjacentHTML("beforeend", `<iframe src="${box.dataset.src}" title="${box.dataset.title}" allowfullscreen></iframe><div class="ep-loading" role="progressbar" aria-label="Carregando painel"><span class="load-bar"><i></i></span></div>`);
+      box.insertAdjacentHTML("beforeend", `<iframe src="${box.dataset.src}" title="${box.dataset.title}" allowfullscreen></iframe><div class="ep-loading" role="progressbar" aria-label="${L("Carregando painel", "Loading dashboard")}"><span class="load-bar"><i></i></span></div>`);
       $(".embed-poster", box).classList.add("gone");
       $("iframe", box).addEventListener("load", () => { const l = $(".ep-loading", box); l && l.remove(); });
     }));
@@ -363,7 +364,7 @@
     const q = cIn.value.trim().toLowerCase();
     cRes = P.filter(p => !q || (p.title + " " + (p.stack || []).join(" ") + " " + catById[p.cat].label).toLowerCase().includes(q)).slice(0, 12);
     cSel = Math.min(cSel, Math.max(cRes.length - 1, 0));
-    cList.innerHTML = cRes.map((p, i) => `<li class="${i === cSel ? "sel" : ""}" data-id="${p.id}"><span>${esc(p.title)}</span><small>${esc(catById[p.cat].label)}</small></li>`).join("") || `<li><small>Nada encontrado</small></li>`;
+    cList.innerHTML = cRes.map((p, i) => `<li class="${i === cSel ? "sel" : ""}" data-id="${p.id}"><span>${esc(p.title)}</span><small>${esc(catById[p.cat].label)}</small></li>`).join("") || `<li><small>${L("Nada encontrado", "Nothing found")}</small></li>`;
     $$("li[data-id]", cList).forEach(li => li.addEventListener("click", () => { closeCmdk(); openProject(li.dataset.id); }));
   }
   function openCmdk() { cmdk.classList.add("open"); cmdk.setAttribute("aria-hidden", "false"); cIn.value = ""; cSel = 0; cRender(); setTimeout(() => cIn.focus(), 30); }
@@ -384,7 +385,7 @@
   /* ---------- ABOUT / CERTS / COURSES ---------- */
   const person = D.person;
   $("#bioTitle").textContent = person.bioTitle;
-  $("#photo").outerHTML = imgHTML(person.photo, "Foto de " + person.name, "photo");
+  $("#photo").outerHTML = imgHTML(person.photo, L("Foto de ", "Photo of ") + person.name, "photo");
   $("#pName").textContent = person.fullName;
   $("#pRole").textContent = person.role;
   $("#pLoc").textContent = person.location;

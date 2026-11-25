@@ -70,6 +70,12 @@ A IA responde usando `assets/data.js` (projetos, trajetória, certificações) *
 Tudo fica em `assets/data.js`. A IA lê esse mesmo arquivo, então qualquer projeto novo
 já passa a ser conhecido por ela no próximo deploy.
 
+**Versão em inglês:** o botão PT | EN no topo troca o idioma (também dá para abrir com `?lang=en`).
+Os textos em inglês dos projetos, bio e carreira ficam em `assets/data.en.js`, com o mesmo `id` do
+projeto em `data.js`. Ao criar ou mudar um projeto, atualize os dois arquivos; se um projeto não tiver
+tradução, ele aparece em português na versão em inglês. Textos fixos da página usam os atributos
+`data-en` no `index.html`, e a lógica de idioma fica em `assets/i18n.js`.
+
 Categorias: powerbi, python, sql, appscript, langchain, dbt, looker, metabase.
 Cada projeto aceita: `summary`, `intro`, `sections` (`h`, `p`, `ul`, `ol`, `pre`), `stack`,
 `links` (`primary: true` destaca o botão), `embed` (`powerbi`, `looker` ou `pdf`),
