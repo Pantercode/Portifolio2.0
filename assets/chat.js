@@ -113,6 +113,13 @@
   log.addEventListener("click", e => { const a = e.target.closest('a[href^="#projeto-"]'); if (a && innerWidth < 820) close(); });
   addEventListener("keydown", e => { if (e.key === "Escape" && panel.classList.contains("open")) close(); });
 
+  /* enquanto os botões do topo (que já têm "Perguntar à IA") estão na tela, o botão flutuante some
+     para não ficar por cima deles em telas de notebook */
+  const heroCta = document.querySelector(".hero-cta");
+  if (heroCta && "IntersectionObserver" in window) {
+    new IntersectionObserver(([e]) => launcher.classList.toggle("in-hero", e.isIntersecting)).observe(heroCta);
+  }
+
   window.MarcellAI = { open, ask };
   document.querySelectorAll("[data-ai]").forEach(b => b.addEventListener("click", e => {
     e.preventDefault();

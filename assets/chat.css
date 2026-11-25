@@ -4,7 +4,7 @@
   border-radius: 999px; border: 1px solid rgba(0,255,65,.45); background: rgba(3,16,5,.88); color: var(--text); cursor: pointer;
   backdrop-filter: blur(12px); box-shadow: 0 20px 50px rgba(0,0,0,.5), 0 0 40px rgba(0,255,65,.25); transition: .3s; font: inherit; }
 .ai-launch:hover { transform: translateY(-2px); box-shadow: 0 24px 60px rgba(0,0,0,.55), 0 0 60px rgba(0,255,65,.4); }
-.ai-launch.hide { opacity: 0; pointer-events: none; transform: translateY(20px); }
+.ai-launch.hide, .ai-launch.in-hero { opacity: 0; pointer-events: none; transform: translateY(20px); }
 .ai-launch::after { content: ""; position: absolute; inset: -6px; border-radius: 999px; border: 1px solid rgba(0,255,65,.35); animation: aiRing 2.4s ease-out infinite; }
 @keyframes aiRing { from { opacity: .9; transform: scale(.96) } to { opacity: 0; transform: scale(1.12) } }
 .ai-txt { display: flex; flex-direction: column; line-height: 1.15; text-align: left; }
