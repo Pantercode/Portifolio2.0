@@ -10,25 +10,25 @@ window.PORTFOLIO = {
     name: "Marcell Felipe",
     fullName: "Marcell Felipe de Paula Oliveira",
     role: "Supervisor de Dados",
-    tagline: "Analytics Engineering · Data Strategy · Dashboards · Agentes de IA",
+    tagline: "Análise de Dados · Analytics Engineering · Agentes de IA e RAG",
     location: "Belo Horizonte, MG · Brasil",
     photo: "img/foto-perfil.png",
     bioTitle: "Quem sou eu",
-    bio: "Olá! Sou Marcell Felipe, Analista de Dados. Iniciei minha carreira na Engenharia de Dados, uma área onde as responsabilidades incluem a criação e manutenção de arquiteturas de big data, garantindo a integração entre diferentes sistemas e fontes de dados. Aqui, me especializei em processos de ETL (Extração, Transformação e Carga), que são fundamentais para transformar dados brutos em informações estruturadas e utilizáveis. Também trabalhei na otimização de consultas e no design de bancos de dados, garantindo o armazenamento eficiente e a recuperação rápida de dados. E como Analista de Dados, passei a focar mais na interpretação e visualização dessas informações. Aqui, minha tarefa é identificar tendências, criar modelos preditivos e contar histórias a partir dos dados. Utilizando ferramentas de visualização e técnicas estatísticas, transformo grandes volumes de informação em insights claros e acionáveis, sempre apresentados de maneira envolvente e visualmente impactante. Em cada etapa, desenvolvi uma combinação única de precisão técnica com criatividade, que me permite oferecer análises avançadas e extrair informações valiosas. Convido-o a explorar meu portfólio para conhecer exemplos do meu trabalho. Estou à disposição para discutir como posso ajudar a levar seu projeto ao sucesso.",
+    bio: "Olá! Sou Marcell Felipe e trabalho com dados em duas frentes que se completam: Análise de Dados e Analytics Engineering. Na engenharia, construo a base: modelagem dimensional, pipelines em camadas (arquitetura medalhão) com dbt, SQL, Python e PySpark, testes de qualidade e CI/CD, para que os números sejam confiáveis e fáceis de usar. Na análise, transformo essa base em decisão: indicadores, dashboards em Power BI e Looker Studio e análises que contam a história por trás dos números, para áreas como finanças, logística, operações, saúde e comercial. Somado a isso, desenvolvo agentes de IA e aplicações com RAG: assistentes que respondem em linguagem natural sobre os dados e documentos de um negócio, com busca híbrida, chamada de ferramentas, resposta com a fonte citada e acurácia medida. Hoje sou Supervisor de Dados na Shopee, onde lidero o time de dados e a inteligência analítica da operação. Antes, como Analytics Engineer na DUX Company, arquitetei as camadas Gold e Diamond do Data Lakehouse que atendiam FP&A, logística, crédito, controladoria e CX. Explore os projetos abaixo e fique à vontade para me chamar no LinkedIn.",
     social: [
       { label: "LinkedIn", url: "https://www.linkedin.com/in/marcell-felipe-de-paula-oliveira-219525199/" },
       { label: "GitHub", url: "https://github.com/Pantercode/" }
     ],
     skillsImage: "img/biografia-1.jpg",
     skillGroups: [
-      { h: "BI e Visualização", items: ["Power BI", "DAX", "Power Query", "Excel", "Google Sheets", "Looker Studio", "Metabase", "GoodData", "Apache Superset", "MicroStrategy", "GA4"] },
+      { h: "Análise de Dados, BI e Visualização", items: ["Power BI", "DAX", "Power Query", "Excel", "Google Sheets", "Looker Studio", "Metabase", "GoodData", "Apache Superset", "MicroStrategy", "GA4"] },
+      { h: "Analytics Engineering", items: ["dbt", "Modelagem Dimensional (Kimball)", "Star Schema", "SCD Tipo 2", "Arquitetura Medalhão", "Semantic Layer", "Data Quality", "Great Expectations", "Write-Audit-Publish", "Data Contracts"] },
+      { h: "IA Generativa, Agentes e RAG", items: ["Agentes de IA", "RAG", "Busca híbrida", "LangGraph", "LangChain", "Google Gemini", "OpenAI API", "Claude", "MCP", "Function Calling", "pgvector", "Ragas", "Pydantic"] },
       { h: "Linguagens e Python", items: ["SQL", "Python", "Pandas", "NumPy", "Polars", "PySpark", "Scikit-learn", "Matplotlib", "Seaborn", "Plotly", "Plotly Dash", "Streamlit", "FastAPI", "Jupyter"] },
       { h: "Engenharia de Dados e Orquestração", items: ["ETL / ELT", "Apache Airflow", "Prefect", "Dagster", "Apache Spark", "Apache Beam", "Databricks", "Kafka", "Airbyte", "Fivetran", "Data Factory", "Docker", "Git", "GitHub Actions", "CI/CD", "Terraform"] },
-      { h: "Analytics Engineering", items: ["dbt", "Modelagem Dimensional (Kimball)", "Star Schema", "SCD Tipo 2", "Arquitetura Medalhão", "Semantic Layer", "Data Quality", "Great Expectations", "Write-Audit-Publish", "Data Contracts"] },
       { h: "Bancos e Data Warehouses", items: ["BigQuery", "Snowflake", "AWS Redshift", "DuckDB", "PostgreSQL", "MySQL", "SQL Server", "Oracle", "MongoDB", "Supabase", "Presto / Trino", "Delta Lake", "Parquet"] },
       { h: "Cloud", items: ["Google Cloud", "Cloud Storage", "AWS S3", "AWS Glue", "AWS Lambda", "Microsoft Azure", "Microsoft Fabric", "Render", "Vercel"] },
       { h: "Automação e Low-code", items: ["Google Apps Script", "AppSheet", "Power Automate", "Power Apps", "n8n", "clasp"] },
-      { h: "IA Generativa e Agentes", items: ["Agentes de IA", "Google Gemini", "LangChain", "OpenAI API", "Claude", "MCP", "RAG", "Function Calling", "Pydantic"] },
       { h: "Web e Design", items: ["HTML", "CSS", "JavaScript", "D3.js", "Figma"] }
     ],
     get skills() { return this.skillGroups.flatMap(g => g.items); }

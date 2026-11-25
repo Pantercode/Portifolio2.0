@@ -115,7 +115,7 @@
 
   /* enquanto os botões do topo (que já têm "Perguntar à IA") estão na tela, o botão flutuante some
      para não ficar por cima deles em telas de notebook */
-  const heroCta = document.querySelector(".hero-cta");
+  const heroCta = document.querySelector(".hero-copy");
   if (heroCta && "IntersectionObserver" in window) {
     new IntersectionObserver(([e]) => launcher.classList.toggle("in-hero", e.isIntersecting)).observe(heroCta);
   }

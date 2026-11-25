@@ -10,21 +10,21 @@
 window.PORTFOLIO_EN = {
   person: {
     role: "Data Supervisor",
-    tagline: "Analytics Engineering · Data Strategy · Dashboards · AI Agents",
+    tagline: "Data Analysis · Analytics Engineering · AI Agents and RAG",
     location: "Belo Horizonte, MG · Brazil",
     bioTitle: "About me",
-    bio: "Hi! I'm Marcell Felipe, a Data Analyst. I started my career in Data Engineering, where the work includes building and maintaining big data architectures and making sure different systems and data sources integrate. There I specialized in ETL (Extract, Transform, Load) processes, which are essential to turn raw data into structured, usable information. I also worked on query optimization and database design, ensuring efficient storage and fast data retrieval. As a Data Analyst, I shifted my focus to interpreting and visualizing that information. My job is to identify trends, build predictive models and tell stories with data. Using visualization tools and statistical techniques, I turn large volumes of information into clear, actionable insights, always presented in an engaging and visually striking way. Along the way, I developed a unique mix of technical precision and creativity that lets me deliver advanced analyses and extract valuable information. I invite you to explore my portfolio to see examples of my work. I'd be glad to discuss how I can help take your project to success."
+    bio: "Hi! I'm Marcell Felipe, and I work with data on two fronts that complement each other: Data Analysis and Analytics Engineering. On the engineering side, I build the foundation: dimensional modeling, layered pipelines (medallion architecture) with dbt, SQL, Python and PySpark, quality tests and CI/CD, so the numbers are reliable and easy to use. On the analysis side, I turn that foundation into decisions: KPIs, Power BI and Looker Studio dashboards and analyses that tell the story behind the numbers, for areas such as finance, logistics, operations, healthcare and sales. On top of that, I build AI agents and RAG applications: assistants that answer questions in natural language about a business's data and documents, with hybrid search, tool calling, cited sources and measured accuracy. Today I'm a Data Supervisor at Shopee, where I lead the data team and the operation's analytical intelligence. Before that, as an Analytics Engineer at DUX Company, I designed the Gold and Diamond layers of the Data Lakehouse serving FP&A, logistics, credit, controllership and CX. Explore the projects below and feel free to reach out on LinkedIn."
   },
 
   skillGroups: [
-    "BI and Visualization",
+    "Data Analysis, BI and Visualization",
+    "Analytics Engineering",
+    "Generative AI, Agents and RAG",
     "Languages and Python",
     "Data Engineering and Orchestration",
-    "Analytics Engineering",
     "Databases and Data Warehouses",
     "Cloud",
     "Automation and Low-code",
-    "Generative AI and Agents",
     "Web and Design"
   ],
 
@@ -71,6 +71,7 @@ window.PORTFOLIO_EN = {
     "SCD Tipo 2": "SCD Type 2",
     "Arquitetura Medalhão": "Medallion Architecture",
     "Agentes de IA": "AI Agents",
+    "Busca híbrida": "Hybrid search",
     "API pública": "Public API",
     "Finanças": "Finance",
     "Séries temporais": "Time series",
